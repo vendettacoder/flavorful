@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Geist', system-ui, sans-serif; -webkit-font-smoothing: antialiased; color: #2A2520; }
+  .mono { font-family: 'Geist Mono', ui-monospace, monospace; }
+  .serif { font-family: 'Instrument Serif', Georgia, serif; }
+</style>
+</helmet>
+
+<!-- ───────── Title ───────── -->
+<div style="position:absolute; left:80px; top:60px; width:1280px">
+  <div style="font-size:14px; letter-spacing:0.12em; text-transform:uppercase; color:#A0A0A0; font-weight:500">Flavorful · v4 · web + iOS</div>
+  <div style="font-size:42px; font-weight:700; letter-spacing:-0.02em; margin-top:6px; color:#2A2520">Same design, two surfaces</div>
+  <div style="font-size:16px; color:#6B6B6B; max-width:780px; margin-top:10px; line-height:1.5">Lighter sage green <span class="mono" style="background:#fff; padding:1px 6px; border-radius:3px; border:1px solid #E8E6E1; font-size:13px; color:#2D6A4F">#2D6A4F</span> for brand surfaces, soothing terracotta <span class="mono" style="background:#fff; padding:1px 6px; border-radius:3px; border:1px solid #E8E6E1; font-size:13px; color:#D4663A">#D4663A</span> in place of hot persimmon, and warm espresso <span class="mono" style="background:#fff; padding:1px 6px; border-radius:3px; border:1px solid #E8E6E1; font-size:13px; color:#2A2520">#2A2520</span> for body so the app no longer reads green. Modal gone — pasting a URL is inline on the library page.</div>
+</div>
+
+<!-- ═══════════ FRAME 1 · LOGIN ═══════════ -->
+<div style="position:absolute; left:80px; top:240px; width:1280px">
+  
+
+  <div style="background:#FAFAF8; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,.08), 0 12px 40px -12px rgba(0,0,0,.12); overflow:hidden; height:820px; display:grid; grid-template-columns:1fr 1fr">
+    <!-- Left: brand panel -->
+    <div style="background:#2D6A4F; color:#FAFAF8; padding:56px; display:flex; flex-direction:column; justify-content:center; position:relative; overflow:hidden">
+      <div style="position:absolute; top:56px; left:56px; font-size:28px; font-weight:800; letter-spacing:-0.03em; display:flex; align-items:center; gap:10px">
+        <div style="width:12px; height:12px; background:#D4663A; border-radius:2px"></div>
+        flavorful
+      </div>
+
+      <div>
+        <div style="font-size:64px; font-weight:700; letter-spacing:-0.035em; line-height:1.0; color:#FAFAF8">Every recipe<br><span style="color:#D4663A">worth saving.</span></div>
+        <div style="font-size:17px; color:rgba(250,250,248,0.7); line-height:1.55; max-width:420px; margin-top:24px">Paste a link from any food blog. We pull the recipe, ditch the life story, and tuck it neatly into your library.</div>
+      </div>
+    </div>
+
+    <!-- Right: sign-in -->
+    <div style="background:#F5EDD8; padding:56px; display:flex; flex-direction:column; justify-content:center; align-items:flex-start">
+      <div style="max-width:380px; width:100%">
+        <div style="font-size:48px; font-weight:700; letter-spacing:-0.03em; line-height:1.0">What's cooking?</div>
+
+        <button style="margin-top:40px; width:100%; height:64px; background:#2D6A4F; border:none; border-radius:6px; display:flex; align-items:center; justify-content:center; gap:14px; font-family:inherit; font-size:16px; font-weight:600; color:#FAFAF8; cursor:pointer; box-shadow:0 10px 24px -6px rgba(45,106,79,0.35), 0 1px 2px rgba(0,0,0,0.06); letter-spacing:-0.005em">
+          <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Continue with Google
+        </button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ FRAME 2 · LIBRARY ═══════════ -->
+<div style="position:absolute; left:80px; top:1180px; width:1280px">
+  
+
+  <div style="background:#FAFAF8; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,.08), 0 12px 40px -12px rgba(0,0,0,.12); overflow:hidden">
+    <!-- Top bar -->
+    <div style="padding:22px 40px; border-bottom:1px solid #EFEDE6; display:flex; align-items:center; justify-content:space-between; background:#FAFAF8">
+      <div style="font-size:20px; font-weight:800; letter-spacing:-0.025em; display:flex; align-items:center; gap:8px; color:#2A2520">
+        <div style="width:10px; height:10px; background:#D4663A; border-radius:2px"></div>
+        flavorful
+      </div>
+      <div style="width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,#D4663A,#9F4A26); color:white; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600">M</div>
+    </div>
+
+    <!-- Header + inline URL paste -->
+    <div style="padding:48px 40px 28px">
+      <div style="display:flex; align-items:flex-end; justify-content:space-between">
+        <div>
+          <div style="font-size:13px; letter-spacing:0.12em; text-transform:uppercase; color:#A0A0A0; font-weight:500">Your library</div>
+          <div style="font-size:42px; font-weight:700; letter-spacing:-0.025em; margin-top:4px; color:#2A2520">42 recipes</div>
+        </div>
+        <div class="mono" style="font-size:11px; color:#A0A0A0; padding-bottom:6px">⌘V to paste</div>
+      </div>
+
+      <!-- URL paste field — prominent, always visible -->
+      <div style="margin-top:32px; display:flex; align-items:stretch; background:#FFFFFF; border:1.5px solid #E2DFD7; border-radius:10px; box-shadow:0 4px 18px -2px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04); overflow:hidden">
+        <div style="display:flex; align-items:center; padding:0 24px; color:#D4663A">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"/></svg>
+        </div>
+        <div style="flex:1; height:84px; display:flex; align-items:center; font-size:19px; color:#A8A8A8; letter-spacing:-0.005em">
+          Paste a recipe URL
+        </div>
+        <button style="padding:0 36px; background:#2D6A4F; color:#FAFAF8; border:none; font-family:inherit; font-size:15px; font-weight:600; cursor:pointer; opacity:0.4; display:flex; align-items:center; gap:8px; letter-spacing:-0.005em">
+          Save →
+        </button>
+      </div>
+    </div>
+
+    <!-- Grid (recipe cards) -->
+    <div style="padding:12px 40px 40px; display:grid; grid-template-columns:repeat(3, 1fr); gap:24px 22px">
+      <div style="background:#F5EDD8; border:1px solid #E5DBB8; border-radius:8px; padding:24px 22px 22px; display:flex; flex-direction:column; gap:12px; min-height:184px; position:relative; box-shadow:0 8px 20px -6px rgba(80,50,20,0.12), 0 2px 4px rgba(80,50,20,0.05); cursor:pointer; transition:all .2s">
+        <div style="position:absolute; top:18px; right:20px; color:#D4663A; font-size:15px; line-height:1">★</div>
+        <div class="mono" style="font-size:10px; color:#D4663A; letter-spacing:0.08em; text-transform:uppercase; font-weight:500">indianhealthyrecipes.com</div>
+        <div style="font-size:19px; font-weight:600; line-height:1.25; letter-spacing:-0.015em; color:#2A2520">Paneer Butter Masala</div>
+        <div style="font-size:13px; color:#6B6B6B; line-height:1.5; letter-spacing:-0.005em">Creamy tomato-cashew gravy, restaurant-style.</div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top:6px">
+          <div class="mono" style="font-size:11px; color:#A0A0A0">45 min</div>
+          <div style="font-size:14px; color:#C8C5BD; line-height:1">↗</div>
+        </div>
+      </div>
+      <div style="background:#F5EDD8; border:1px solid #E5DBB8; border-radius:8px; padding:24px 22px 22px; display:flex; flex-direction:column; gap:12px; min-height:184px; position:relative; box-shadow:0 8px 20px -6px rgba(80,50,20,0.12), 0 2px 4px rgba(80,50,20,0.05); cursor:pointer; transition:all .2s">
+        <div class="mono" style="font-size:10px; color:#D4663A; letter-spacing:0.08em; text-transform:uppercase; font-weight:500">indianhealthyrecipes.com</div>
+        <div style="font-size:19px; font-weight:600; line-height:1.25; letter-spacing:-0.015em; color:#2A2520">Masala Pasta</div>
+        <div style="font-size:13px; color:#6B6B6B; line-height:1.5; letter-spacing:-0.005em">Spiced tomato sauce with garam masala and ginger.</div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top:6px">
+          <div class="mono" style="font-size:11px; color:#A0A0A0">25 min</div>
+          <div style="font-size:14px; color:#C8C5BD; line-height:1">↗</div>
+        </div>
+      </div>
+      <div style="background:#F5EDD8; border:1px solid #E5DBB8; border-radius:8px; padding:24px 22px 22px; display:flex; flex-direction:column; gap:12px; min-height:184px; position:relative; box-shadow:0 8px 20px -6px rgba(80,50,20,0.12), 0 2px 4px rgba(80,50,20,0.05); cursor:pointer; transition:all .2s">
+        <div class="mono" style="font-size:10px; color:#D4663A; letter-spacing:0.08em; text-transform:uppercase; font-weight:500">cookieandkate.com</div>
+        <div style="font-size:19px; font-weight:600; line-height:1.25; letter-spacing:-0.015em; color:#2A2520">Best Lentil Soup</div>
+        <div style="font-size:13px; color:#6B6B6B; line-height:1.5; letter-spacing:-0.005em">Curry powder, lemon, and a creamy blended finish.</div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top:6px">
+          <div class="mono" style="font-size:11px; color:#A0A0A0">55 min</div>
+          <div style="font-size:14px; color:#C8C5BD; line-height:1">↗</div>
+        </div>
+      </div>
+      <div style="background:#F5EDD8; border:1px solid #E5DBB8; border-radius:8px; padding:24px 22px 22px; display:flex; flex-direction:column; gap:12px; min-height:184px; position:relative; box-shadow:0 8px 20px -6px rgba(80,50,20,0.12), 0 2px 4px rgba(80,50,20,0.05); cursor:pointer; transition:all .2s">
+        <div class="mono" style="font-size:10px; color:#D4663A; letter-spacing:0.08em; text-transform:uppercase; font-weight:500">bonappetit.com</div>
+        <div style="font-size:19px; font-weight:600; line-height:1.25; letter-spacing:-0.015em; color:#2A2520">Charred Cabbage Wedges</div>
+        <div style="font-size:13px; color:#6B6B6B; line-height:1.5; letter-spacing:-0.005em">Smoky wedges with anchovy-caper butter.</div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top:6px">
+          <div class="mono" style="font-size:11px; color:#A0A0A0">35 min</div>
+          <div style="font-size:14px; color:#C8C5BD; line-height:1">↗</div>
+        </div>
+      </div>
+      <div style="background:#F5EDD8; border:1px solid #E5DBB8; border-radius:8px; padding:24px 22px 22px; display:flex; flex-direction:column; gap:12px; min-height:184px; position:relative; box-shadow:0 8px 20px -6px rgba(80,50,20,0.12), 0 2px 4px rgba(80,50,20,0.05); cursor:pointer; transition:all .2s">
+        <div class="mono" style="font-size:10px; color:#D4663A; letter-spacing:0.08em; text-transform:uppercase; font-weight:500">smittenkitchen.com</div>
+        <div style="font-size:19px; font-weight:600; line-height:1.25; letter-spacing:-0.015em; color:#2A2520">Brown Butter Gnocchi</div>
+        <div style="font-size:13px; color:#6B6B6B; line-height:1.5; letter-spacing:-0.005em">Nutty brown butter, crispy sage, parmesan.</div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top:6px">
+          <div class="mono" style="font-size:11px; color:#A0A0A0">30 min</div>
+          <div style="font-size:14px; color:#C8C5BD; line-height:1">↗</div>
+        </div>
+      </div>
+      <div style="background:#F5EDD8; border:1px solid #E5DBB8; border-radius:8px; padding:24px 22px 22px; display:flex; flex-direction:column; gap:12px; min-height:184px; position:relative; box-shadow:0 8px 20px -6px rgba(80,50,20,0.12), 0 2px 4px rgba(80,50,20,0.05); cursor:pointer; transition:all .2s">
+        <div class="mono" style="font-size:10px; color:#D4663A; letter-spacing:0.08em; text-transform:uppercase; font-weight:500">nytimes.com</div>
+        <div style="font-size:19px; font-weight:600; line-height:1.25; letter-spacing:-0.015em; color:#2A2520">Herby Yogurt Grain Bowl</div>
+        <div style="font-size:13px; color:#6B6B6B; line-height:1.5; letter-spacing:-0.005em">Cucumber, dill and lemon over warm farro.</div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top:6px">
+          <div class="mono" style="font-size:11px; color:#A0A0A0">20 min</div>
+          <div style="font-size:14px; color:#C8C5BD; line-height:1">↗</div>
+        </div>
+      </div>
+      <div style="background:#F5EDD8; border:1px solid #E5DBB8; border-radius:8px; padding:24px 22px 22px; display:flex; flex-direction:column; gap:12px; min-height:184px; position:relative; box-shadow:0 8px 20px -6px rgba(80,50,20,0.12), 0 2px 4px rgba(80,50,20,0.05); cursor:pointer; transition:all .2s">
+        <div class="mono" style="font-size:10px; color:#D4663A; letter-spacing:0.08em; text-transform:uppercase; font-weight:500">food52.com</div>
+        <div style="font-size:19px; font-weight:600; line-height:1.25; letter-spacing:-0.015em; color:#2A2520">Buttermilk Pancakes</div>
+        <div style="font-size:13px; color:#6B6B6B; line-height:1.5; letter-spacing:-0.005em">Fluffy, tangy, classic Sunday stack.</div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top:6px">
+          <div class="mono" style="font-size:11px; color:#A0A0A0">25 min</div>
+          <div style="font-size:14px; color:#C8C5BD; line-height:1">↗</div>
+        </div>
+      </div>
+      <div style="background:#F5EDD8; border:1px solid #E5DBB8; border-radius:8px; padding:24px 22px 22px; display:flex; flex-direction:column; gap:12px; min-height:184px; position:relative; box-shadow:0 8px 20px -6px rgba(80,50,20,0.12), 0 2px 4px rgba(80,50,20,0.05); cursor:pointer; transition:all .2s">
+        <div class="mono" style="font-size:10px; color:#D4663A; letter-spacing:0.08em; text-transform:uppercase; font-weight:500">cookieandkate.com</div>
+        <div style="font-size:19px; font-weight:600; line-height:1.25; letter-spacing:-0.015em; color:#2A2520">Crispy Chickpeas Bowl</div>
+        <div style="font-size:13px; color:#6B6B6B; line-height:1.5; letter-spacing:-0.005em">Roasted chickpeas, tahini and lots of greens.</div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top:6px">
+          <div class="mono" style="font-size:11px; color:#A0A0A0">40 min</div>
+          <div style="font-size:14px; color:#C8C5BD; line-height:1">↗</div>
+        </div>
+      </div>
+      <div style="background:#F5EDD8; border:1px solid #E5DBB8; border-radius:8px; padding:24px 22px 22px; display:flex; flex-direction:column; gap:12px; min-height:184px; position:relative; box-shadow:0 8px 20px -6px rgba(80,50,20,0.12), 0 2px 4px rgba(80,50,20,0.05); cursor:pointer; transition:all .2s">
+        <div class="mono" style="font-size:10px; color:#D4663A; letter-spacing:0.08em; text-transform:uppercase; font-weight:500">seriouseats.com</div>
+        <div style="font-size:19px; font-weight:600; line-height:1.25; letter-spacing:-0.015em; color:#2A2520">Roasted Tomato Pizza</div>
+        <div style="font-size:13px; color:#6B6B6B; line-height:1.5; letter-spacing:-0.005em">Slow-roasted tomatoes on a charred sourdough crust.</div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top:6px">
+          <div class="mono" style="font-size:11px; color:#A0A0A0">90 min</div>
+          <div style="font-size:14px; color:#C8C5BD; line-height:1">↗</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ FRAME 3 · ADD RECIPE (inline paste, no modal) ═══════════ -->
+<div style="position:absolute; left:80px; top:2448px; width:1280px">
+  
+
+  <div style="background:#FAFAF8; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,.08), 0 12px 40px -12px rgba(0,0,0,.12); overflow:hidden">
+    <!-- Top bar -->
+    <div style="padding:22px 40px; border-bottom:1px solid #EFEDE6; display:flex; align-items:center; justify-content:space-between; background:#FAFAF8">
+      <div style="font-size:20px; font-weight:800; letter-spacing:-0.025em; display:flex; align-items:center; gap:8px; color:#2A2520">
+        <div style="width:10px; height:10px; background:#D4663A; border-radius:2px"></div>
+        flavorful
+      </div>
+      <div style="width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,#D4663A,#9F4A26); color:white; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600">M</div>
+    </div>
+
+    <!-- Header + URL paste with active scrape -->
+    <div style="padding:48px 40px 28px">
+      <div style="display:flex; align-items:flex-end; justify-content:space-between">
+        <div>
+          <div style="font-size:13px; letter-spacing:0.12em; text-transform:uppercase; color:#A0A0A0; font-weight:500">Your library</div>
+          <div style="font-size:42px; font-weight:700; letter-spacing:-0.025em; margin-top:4px; color:#2A2520">42 recipes</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; padding-bottom:8px; font-size:13px; color:#D4663A; font-weight:500">
+          <div style="width:8px; height:8px; border-radius:50%; background:#D4663A; box-shadow:0 0 0 5px rgba(212,102,58,0.15)"></div>
+          Saving new recipe…
+        </div>
+      </div>
+
+      <!-- URL field — pasted, simple loading on button -->
+      <div style="margin-top:32px; display:flex; align-items:stretch; background:#FFFFFF; border:1.5px solid #D4663A; border-radius:10px; box-shadow:0 0 0 4px rgba(212,102,58,0.12), 0 4px 18px -2px rgba(0,0,0,0.06); overflow:hidden">
+        <div style="display:flex; align-items:center; padding:0 24px; color:#D4663A">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"/></svg>
+        </div>
+        <div class="mono" style="flex:1; height:84px; display:flex; align-items:center; font-size:16px; color:#2A2520">
+          https://cookieandkate.com/best-lentil-soup-recipe
+        </div>
+        <button style="padding:0 36px; background:#2D6A4F; color:#FAFAF8; border:none; font-family:inherit; font-size:15px; font-weight:600; display:flex; align-items:center; gap:12px; letter-spacing:-0.005em">
+          <div style="width:14px; height:14px; border-radius:50%; border:2px solid #FAFAF8; border-right-color:transparent; box-sizing:border-box"></div>
+          Saving…
+        </button>
+      </div>
+    </div>
+
+    <!-- Grid: existing recipes -->
+    <div style="padding:28px 40px 40px; display:grid; grid-template-columns:repeat(3, 1fr); gap:24px 22px">
+      <div style="background:#F5EDD8; border:1px solid #E5DBB8; border-radius:8px; padding:24px 22px 22px; display:flex; flex-direction:column; gap:12px; min-height:184px; position:relative; box-shadow:0 8px 20px -6px rgba(80,50,20,0.12), 0 2px 4px rgba(80,50,20,0.05); cursor:pointer; transition:all .2s">
+        <div style="position:absolute; top:18px; right:20px; color:#D4663A; font-size:15px; line-height:1">★</div>
+        <div class="mono" style="font-size:10px; color:#D4663A; letter-spacing:0.08em; text-transform:uppercase; font-weight:500">indianhealthyrecipes.com</div>
+        <div style="font-size:19px; font-weight:600; line-height:1.25; letter-spacing:-0.015em; color:#2A2520">Paneer Butter Masala</div>
+        <div style="font-size:13px; color:#6B6B6B; line-height:1.5; letter-spacing:-0.005em">Creamy tomato-cashew gravy, restaurant-style.</div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top:6px">
+          <div class="mono" style="font-size:11px; color:#A0A0A0">45 min</div>
+          <div style="font-size:14px; color:#C8C5BD; line-height:1">↗</div>
+        </div>
+      </div>
+      <div style="background:#F5EDD8; border:1px solid #E5DBB8; border-radius:8px; padding:24px 22px 22px; display:flex; flex-direction:column; gap:12px; min-height:184px; position:relative; box-shadow:0 8px 20px -6px rgba(80,50,20,0.12), 0 2px 4px rgba(80,50,20,0.05); cursor:pointer; transition:all .2s">
+        <div class="mono" style="font-size:10px; color:#D4663A; letter-spacing:0.08em; text-transform:uppercase; font-weight:500">indianhealthyrecipes.com</div>
+        <div style="font-size:19px; font-weight:600; line-height:1.25; letter-spacing:-0.015em; color:#2A2520">Masala Pasta</div>
+        <div style="font-size:13px; color:#6B6B6B; line-height:1.5; letter-spacing:-0.005em">Spiced tomato sauce with garam masala and ginger.</div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top:6px">
+          <div class="mono" style="font-size:11px; color:#A0A0A0">25 min</div>
+          <div style="font-size:14px; color:#C8C5BD; line-height:1">↗</div>
+        </div>
+      </div>
+      <div style="background:#F5EDD8; border:1px solid #E5DBB8; border-radius:8px; padding:24px 22px 22px; display:flex; flex-direction:column; gap:12px; min-height:184px; position:relative; box-shadow:0 8px 20px -6px rgba(80,50,20,0.12), 0 2px 4px rgba(80,50,20,0.05); cursor:pointer; transition:all .2s">
+        <div class="mono" style="font-size:10px; color:#D4663A; letter-spacing:0.08em; text-transform:uppercase; font-weight:500">bonappetit.com</div>
+        <div style="font-size:19px; font-weight:600; line-height:1.25; letter-spacing:-0.015em; color:#2A2520">Charred Cabbage Wedges</div>
+        <div style="font-size:13px; color:#6B6B6B; line-height:1.5; letter-spacing:-0.005em">Smoky wedges with anchovy-caper butter.</div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top:6px">
+          <div class="mono" style="font-size:11px; color:#A0A0A0">35 min</div>
+          <div style="font-size:14px; color:#C8C5BD; line-height:1">↗</div>
+        </div>
+      </div>
+      <div style="background:#F5EDD8; border:1px solid #E5DBB8; border-radius:8px; padding:24px 22px 22px; display:flex; flex-direction:column; gap:12px; min-height:184px; position:relative; box-shadow:0 8px 20px -6px rgba(80,50,20,0.12), 0 2px 4px rgba(80,50,20,0.05); cursor:pointer; transition:all .2s">
+        <div class="mono" style="font-size:10px; color:#D4663A; letter-spacing:0.08em; text-transform:uppercase; font-weight:500">smittenkitchen.com</div>
+        <div style="font-size:19px; font-weight:600; line-height:1.25; letter-spacing:-0.015em; color:#2A2520">Brown Butter Gnocchi</div>
+        <div style="font-size:13px; color:#6B6B6B; line-height:1.5; letter-spacing:-0.005em">Nutty brown butter, crispy sage, parmesan.</div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top:6px">
+          <div class="mono" style="font-size:11px; color:#A0A0A0">30 min</div>
+          <div style="font-size:14px; color:#C8C5BD; line-height:1">↗</div>
+        </div>
+      </div>
+      <div style="background:#F5EDD8; border:1px solid #E5DBB8; border-radius:8px; padding:24px 22px 22px; display:flex; flex-direction:column; gap:12px; min-height:184px; position:relative; box-shadow:0 8px 20px -6px rgba(80,50,20,0.12), 0 2px 4px rgba(80,50,20,0.05); cursor:pointer; transition:all .2s">
+        <div class="mono" style="font-size:10px; color:#D4663A; letter-spacing:0.08em; text-transform:uppercase; font-weight:500">nytimes.com</div>
+        <div style="font-size:19px; font-weight:600; line-height:1.25; letter-spacing:-0.015em; color:#2A2520">Herby Yogurt Grain Bowl</div>
+        <div style="font-size:13px; color:#6B6B6B; line-height:1.5; letter-spacing:-0.005em">Cucumber, dill and lemon over warm farro.</div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top:6px">
+          <div class="mono" style="font-size:11px; color:#A0A0A0">20 min</div>
+          <div style="font-size:14px; color:#C8C5BD; line-height:1">↗</div>
+        </div>
+      </div>
+      <div style="background:#F5EDD8; border:1px solid #E5DBB8; border-radius:8px; padding:24px 22px 22px; display:flex; flex-direction:column; gap:12px; min-height:184px; position:relative; box-shadow:0 8px 20px -6px rgba(80,50,20,0.12), 0 2px 4px rgba(80,50,20,0.05); cursor:pointer; transition:all .2s">
+        <div class="mono" style="font-size:10px; color:#D4663A; letter-spacing:0.08em; text-transform:uppercase; font-weight:500">food52.com</div>
+        <div style="font-size:19px; font-weight:600; line-height:1.25; letter-spacing:-0.015em; color:#2A2520">Buttermilk Pancakes</div>
+        <div style="font-size:13px; color:#6B6B6B; line-height:1.5; letter-spacing:-0.005em">Fluffy, tangy, classic Sunday stack.</div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top:6px">
+          <div class="mono" style="font-size:11px; color:#A0A0A0">25 min</div>
+          <div style="font-size:14px; color:#C8C5BD; line-height:1">↗</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ FRAME 4 · RECIPE DETAIL ═══════════ -->
+<div style="position:absolute; left:80px; top:3470px; width:1280px">
+  
+
+  <div style="background:#FAFAF8; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,.08), 0 12px 40px -12px rgba(0,0,0,.12); overflow:hidden">
+    <!-- Top bar -->
+    <div style="padding:20px 40px; border-bottom:1px solid #EFEDE6; display:flex; align-items:center; justify-content:space-between">
+      <div style="display:flex; align-items:center; gap:24px">
+        <div style="font-size:20px; font-weight:800; letter-spacing:-0.025em; display:flex; align-items:center; gap:8px">
+          <div style="width:10px; height:10px; background:#D4663A; border-radius:2px"></div>
+          flavorful
+        </div>
+        <div style="font-size:13px; color:#A0A0A0; display:flex; align-items:center; gap:8px">
+          <span style="cursor:pointer">Library</span>
+          <span>›</span>
+          <span style="color:#2A2520">Best Lentil Soup</span>
+        </div>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center">
+        <a style="height:36px; padding:0 16px; background:#D4663A; color:#FFFFFF; border:none; border-radius:4px; font-family:inherit; font-size:12px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:8px; letter-spacing:-0.005em; text-decoration:none">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          View on cookieandkate.com
+        </a>
+        <button style="height:36px; padding:0 14px; background:#FFFFFF; border:1px solid #E8E6E1; border-radius:4px; font-family:inherit; font-size:12px; font-weight:500; color:#2A2520; cursor:pointer; display:flex; align-items:center; gap:6px">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="#D4663A" stroke="#D4663A" stroke-width="2" stroke-linejoin="round"><polygon points="12 2 15 9 22 9 17 14 19 22 12 18 5 22 7 14 2 9 9 9 12 2"/></svg>
+          Saved
+        </button>
+        <button style="height:36px; padding:0 14px; background:#FFFFFF; border:1px solid #E8E6E1; border-radius:4px; font-family:inherit; font-size:12px; font-weight:500; color:#6B6B6B; cursor:pointer">Delete</button>
+      </div>
+    </div>
+
+    <!-- Header (no image) -->
+    <div style="padding:56px 56px 36px">
+        <div class="mono" style="font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:#D4663A">cookieandkate.com</div>
+        <h1 style="font-size:64px; font-weight:700; letter-spacing:-0.035em; line-height:0.98; margin:14px 0 0; color:#2A2520">Best Lentil Soup</h1>
+        <div style="font-size:17px; color:#6B6B6B; line-height:1.55; margin-top:18px; max-width:540px">Rich, comforting, and surprisingly easy. Curry powder and a hit of lemon make this lentil soup something you'll come back to all winter.</div>
+
+        <!-- Stats row -->
+        <div style="display:flex; gap:48px; margin-top:36px; padding-top:24px; border-top:1px solid #E8E6E1">
+          <div>
+            <div style="font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:#A0A0A0">Time</div>
+            <div style="font-size:20px; font-weight:600; margin-top:2px; letter-spacing:-0.01em">55 min</div>
+          </div>
+          <div>
+            <div style="font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:#A0A0A0">Serves</div>
+            <div style="display:flex; align-items:center; gap:10px; margin-top:2px">
+              <div style="width:24px; height:24px; border-radius:4px; background:#FFFFFF; border:1px solid #E8E6E1; display:flex; align-items:center; justify-content:center; font-size:13px; color:#6B6B6B; cursor:pointer">−</div>
+              <div style="font-size:20px; font-weight:600; letter-spacing:-0.01em; min-width:18px; text-align:center">4</div>
+              <div style="width:24px; height:24px; border-radius:4px; background:#2D6A4F; color:#FAFAF8; display:flex; align-items:center; justify-content:center; font-size:13px; cursor:pointer">+</div>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:#A0A0A0">Difficulty</div>
+            <div style="font-size:20px; font-weight:600; margin-top:2px; letter-spacing:-0.01em">Easy</div>
+          </div>
+          <div>
+            <div style="font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:#A0A0A0">Saved</div>
+            <div style="font-size:20px; font-weight:600; margin-top:2px; letter-spacing:-0.01em; color:#2A2520">3 weeks ago</div>
+          </div>
+        </div>
+    </div>
+
+    <!-- Body: ingredients + method, content first, larger type for cooking -->
+    <div style="padding:12px 56px 56px; display:grid; grid-template-columns:1fr 1.5fr; gap:80px">
+      <!-- Ingredients -->
+      <div>
+        <div style="display:flex; align-items:baseline; justify-content:space-between; padding-bottom:14px; border-bottom:2px solid #2D6A4F">
+          <div style="font-size:22px; font-weight:700; letter-spacing:-0.015em; color:#2A2520">Ingredients</div>
+          <div class="mono" style="font-size:12px; color:#A0A0A0">14 · serves 4</div>
+        </div>
+
+        <div style="margin-top:6px; display:flex; flex-direction:column">
+          <div style="display:flex; align-items:flex-start; gap:16px; padding:14px 0; border-bottom:1px solid #F0EEE8">
+            <div style="width:22px; height:22px; border-radius:4px; background:#2D6A4F; flex-shrink:0; margin-top:2px; display:flex; align-items:center; justify-content:center; color:#D4663A; font-size:12px; font-weight:700">✓</div>
+            <div style="flex:1; opacity:0.4">
+              <div style="font-size:16px; line-height:1.45; text-decoration:line-through"><span style="font-weight:600">¼ cup</span> olive oil</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:16px; padding:14px 0; border-bottom:1px solid #F0EEE8">
+            <div style="width:22px; height:22px; border-radius:4px; background:#2D6A4F; flex-shrink:0; margin-top:2px; display:flex; align-items:center; justify-content:center; color:#D4663A; font-size:12px; font-weight:700">✓</div>
+            <div style="flex:1; opacity:0.4">
+              <div style="font-size:16px; line-height:1.45; text-decoration:line-through"><span style="font-weight:600">1</span> onion <span style="color:#6B6B6B; font-weight:400">— finely chopped</span></div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:16px; padding:14px 0; border-bottom:1px solid #F0EEE8">
+            <div style="width:22px; height:22px; border-radius:4px; background:#2D6A4F; flex-shrink:0; margin-top:2px; display:flex; align-items:center; justify-content:center; color:#D4663A; font-size:12px; font-weight:700">✓</div>
+            <div style="flex:1; opacity:0.4">
+              <div style="font-size:16px; line-height:1.45; text-decoration:line-through"><span style="font-weight:600">2</span> carrots <span style="color:#6B6B6B; font-weight:400">— peeled & diced</span></div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:16px; padding:14px 0; border-bottom:1px solid #F0EEE8">
+            <div style="width:22px; height:22px; border-radius:4px; border:1.5px solid #C8C5BD; flex-shrink:0; margin-top:2px; box-sizing:border-box"></div>
+            <div style="flex:1">
+              <div style="font-size:16px; line-height:1.45; color:#2A2520"><span style="font-weight:600">4 cloves</span> garlic <span style="color:#6B6B6B; font-weight:400">— pressed</span></div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:16px; padding:14px 0; border-bottom:1px solid #F0EEE8">
+            <div style="width:22px; height:22px; border-radius:4px; border:1.5px solid #C8C5BD; flex-shrink:0; margin-top:2px; box-sizing:border-box"></div>
+            <div style="flex:1">
+              <div style="font-size:16px; line-height:1.45; color:#2A2520"><span style="font-weight:600">2 tsp</span> ground cumin</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:16px; padding:14px 0; border-bottom:1px solid #F0EEE8">
+            <div style="width:22px; height:22px; border-radius:4px; border:1.5px solid #C8C5BD; flex-shrink:0; margin-top:2px; box-sizing:border-box"></div>
+            <div style="flex:1">
+              <div style="font-size:16px; line-height:1.45; color:#2A2520"><span style="font-weight:600">1 tsp</span> curry powder</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:16px; padding:14px 0; border-bottom:1px solid #F0EEE8">
+            <div style="width:22px; height:22px; border-radius:4px; border:1.5px solid #C8C5BD; flex-shrink:0; margin-top:2px; box-sizing:border-box"></div>
+            <div style="flex:1">
+              <div style="font-size:16px; line-height:1.45; color:#2A2520"><span style="font-weight:600">½ tsp</span> dried thyme</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:16px; padding:14px 0; border-bottom:1px solid #F0EEE8">
+            <div style="width:22px; height:22px; border-radius:4px; border:1.5px solid #C8C5BD; flex-shrink:0; margin-top:2px; box-sizing:border-box"></div>
+            <div style="flex:1">
+              <div style="font-size:16px; line-height:1.45; color:#2A2520"><span style="font-weight:600">1 can</span> diced tomatoes <span style="color:#6B6B6B; font-weight:400">— 28 oz, drained</span></div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:16px; padding:14px 0; border-bottom:1px solid #F0EEE8">
+            <div style="width:22px; height:22px; border-radius:4px; border:1.5px solid #C8C5BD; flex-shrink:0; margin-top:2px; box-sizing:border-box"></div>
+            <div style="flex:1">
+              <div style="font-size:16px; line-height:1.45; color:#2A2520"><span style="font-weight:600">1 cup</span> brown lentils <span style="color:#6B6B6B; font-weight:400">— picked over & rinsed</span></div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:16px; padding:14px 0; border-bottom:1px solid #F0EEE8">
+            <div style="width:22px; height:22px; border-radius:4px; border:1.5px solid #C8C5BD; flex-shrink:0; margin-top:2px; box-sizing:border-box"></div>
+            <div style="flex:1">
+              <div style="font-size:16px; line-height:1.45; color:#2A2520"><span style="font-weight:600">4 cups</span> vegetable broth</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:16px; padding:14px 0; border-bottom:1px solid #F0EEE8">
+            <div style="width:22px; height:22px; border-radius:4px; border:1.5px solid #C8C5BD; flex-shrink:0; margin-top:2px; box-sizing:border-box"></div>
+            <div style="flex:1">
+              <div style="font-size:16px; line-height:1.45; color:#2A2520"><span style="font-weight:600">2 cups</span> water</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:16px; padding:14px 0; border-bottom:1px solid #F0EEE8">
+            <div style="width:22px; height:22px; border-radius:4px; border:1.5px solid #C8C5BD; flex-shrink:0; margin-top:2px; box-sizing:border-box"></div>
+            <div style="flex:1">
+              <div style="font-size:16px; line-height:1.45; color:#2A2520"><span style="font-weight:600">1 cup</span> kale <span style="color:#6B6B6B; font-weight:400">— stems removed, leaves chopped</span></div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:16px; padding:14px 0; border-bottom:1px solid #F0EEE8">
+            <div style="width:22px; height:22px; border-radius:4px; border:1.5px solid #C8C5BD; flex-shrink:0; margin-top:2px; box-sizing:border-box"></div>
+            <div style="flex:1">
+              <div style="font-size:16px; line-height:1.45; color:#2A2520"><span style="font-weight:600">1</span> lemon <span style="color:#6B6B6B; font-weight:400">— juiced, to taste</span></div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:16px; padding:14px 0">
+            <div style="width:22px; height:22px; border-radius:4px; border:1.5px solid #C8C5BD; flex-shrink:0; margin-top:2px; box-sizing:border-box"></div>
+            <div style="flex:1">
+              <div style="font-size:16px; line-height:1.45; color:#6B6B6B"><span style="font-weight:600; color:#2A2520">to taste</span> salt & freshly ground black pepper</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Method -->
+      <div>
+        <div style="display:flex; align-items:baseline; justify-content:space-between; padding-bottom:14px; border-bottom:2px solid #2D6A4F">
+          <div style="font-size:22px; font-weight:700; letter-spacing:-0.015em; color:#2A2520">Method</div>
+          <div class="mono" style="font-size:12px; color:#A0A0A0">8 steps · ~55 min</div>
+        </div>
+
+        <div style="margin-top:28px; display:flex; flex-direction:column; gap:28px">
+          <div style="display:flex; gap:24px">
+            <div class="mono" style="font-size:14px; font-weight:600; color:#D4663A; min-width:36px; padding-top:4px">01</div>
+            <div style="font-size:17px; line-height:1.65; color:#2A2520">Warm the olive oil in a large Dutch oven over medium heat. Once the oil is shimmering, add the chopped onion and a pinch of salt. Cook, stirring often, until the onion has softened and is turning translucent — <span style="color:#6B6B6B">about 5 minutes.</span></div>
+          </div>
+          <div style="display:flex; gap:24px">
+            <div class="mono" style="font-size:14px; font-weight:600; color:#D4663A; min-width:36px; padding-top:4px">02</div>
+            <div style="font-size:17px; line-height:1.65; color:#2A2520">Add the carrots and stir to combine. Continue cooking until the carrots are tender, stirring occasionally — <span style="color:#6B6B6B">about 6 to 8 minutes.</span></div>
+          </div>
+          <div style="display:flex; gap:24px">
+            <div class="mono" style="font-size:14px; font-weight:600; color:#D4663A; min-width:36px; padding-top:4px">03</div>
+            <div style="font-size:17px; line-height:1.65; color:#2A2520">Add the garlic, cumin, curry powder and thyme. Cook until fragrant — <span style="color:#6B6B6B">about 30 seconds.</span> Pour in the drained tomatoes and cook for a few more minutes, stirring often, until the tomatoes have broken down a bit.</div>
+          </div>
+          <div style="display:flex; gap:24px">
+            <div class="mono" style="font-size:14px; font-weight:600; color:#D4663A; min-width:36px; padding-top:4px">04</div>
+            <div style="font-size:17px; line-height:1.65; color:#2A2520">Pour in the broth and water. Add the lentils and stir. Raise the heat and bring the mixture to a boil, then partially cover the pot and reduce the heat to maintain a gentle simmer. <span style="color:#6B6B6B">Cook for 25 to 30 minutes, or until the lentils are tender but still hold their shape.</span></div>
+          </div>
+          <div style="display:flex; gap:24px">
+            <div class="mono" style="font-size:14px; font-weight:600; color:#D4663A; min-width:36px; padding-top:4px">05</div>
+            <div style="font-size:17px; line-height:1.65; color:#2A2520">Transfer 2 cups of the soup to a blender. Securely fasten the lid and blend until smooth, then pour the blended soup back into the pot. <span style="color:#6B6B6B">Optional — for a creamier texture.</span></div>
+          </div>
+          <div style="display:flex; gap:24px">
+            <div class="mono" style="font-size:14px; font-weight:600; color:#D4663A; min-width:36px; padding-top:4px">06</div>
+            <div style="font-size:17px; line-height:1.65; color:#2A2520">Add the chopped kale and cook for another 5 minutes, or until the kale has wilted into the soup. Remove from heat.</div>
+          </div>
+          <div style="display:flex; gap:24px">
+            <div class="mono" style="font-size:14px; font-weight:600; color:#D4663A; min-width:36px; padding-top:4px">07</div>
+            <div style="font-size:17px; line-height:1.65; color:#2A2520">Squeeze the juice of half a lemon into the soup and stir. Taste, and add more lemon juice, salt or pepper as needed.</div>
+          </div>
+          <div style="display:flex; gap:24px">
+            <div class="mono" style="font-size:14px; font-weight:600; color:#D4663A; min-width:36px; padding-top:4px">08</div>
+            <div style="font-size:17px; line-height:1.65; color:#2A2520">Serve hot, with bread on the side for dipping. <span style="color:#6B6B6B">Leftovers keep in the fridge for up to 4 days.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notes from the page (scraped) -->
+    <div style="padding:48px 56px 56px; border-top:1px solid #EFEDE6; background:#F4F1EA">
+      <div style="display:flex; align-items:baseline; justify-content:space-between; padding-bottom:14px; border-bottom:2px solid #2D6A4F">
+        <div style="font-size:22px; font-weight:700; letter-spacing:-0.015em; color:#2A2520">Notes</div>
+        
+      </div>
+      <div style="margin-top:24px; display:grid; grid-template-columns:1fr 1fr; gap:22px 64px">
+        <div style="display:flex; gap:16px">
+          <div class="mono" style="font-size:13px; color:#D4663A; min-width:24px; padding-top:3px">→</div>
+          <div style="font-size:15px; line-height:1.6; color:#2A2520"><span style="font-weight:600">Make it vegan.</span> The recipe is already vegan as written — just be sure your broth is vegetable-based.</div>
+        </div>
+        <div style="display:flex; gap:16px">
+          <div class="mono" style="font-size:13px; color:#D4663A; min-width:24px; padding-top:3px">→</div>
+          <div style="font-size:15px; line-height:1.6; color:#2A2520"><span style="font-weight:600">Make it gluten-free.</span> This soup is naturally gluten-free. Serve with gluten-free bread or crackers.</div>
+        </div>
+        <div style="display:flex; gap:16px">
+          <div class="mono" style="font-size:13px; color:#D4663A; min-width:24px; padding-top:3px">→</div>
+          <div style="font-size:15px; line-height:1.6; color:#2A2520"><span style="font-weight:600">Storage.</span> Leftover soup keeps in the fridge, covered, for up to 4 days, or in the freezer for up to 3 months.</div>
+        </div>
+        <div style="display:flex; gap:16px">
+          <div class="mono" style="font-size:13px; color:#D4663A; min-width:24px; padding-top:3px">→</div>
+          <div style="font-size:15px; line-height:1.6; color:#2A2520"><span style="font-weight:600">Lentil variations.</span> French green lentils hold their shape better; red lentils break down for a smoother soup.</div>
+        </div>
+        <div style="display:flex; gap:16px">
+          <div class="mono" style="font-size:13px; color:#D4663A; min-width:24px; padding-top:3px">→</div>
+          <div style="font-size:15px; line-height:1.6; color:#2A2520"><span style="font-weight:600">Recommended equipment.</span> A 5- or 6-quart Dutch oven, or any heavy-bottomed pot.</div>
+        </div>
+        <div style="display:flex; gap:16px">
+          <div class="mono" style="font-size:13px; color:#D4663A; min-width:24px; padding-top:3px">→</div>
+          <div style="font-size:15px; line-height:1.6; color:#2A2520"><span style="font-weight:600">Curry powder.</span> Flavor varies by brand — start with 1 tsp and adjust to taste.</div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<!-- ───────── Column section labels ───────── -->
+<div style="position:absolute; left:80px; top:200px; font-size:13px; letter-spacing:0.12em; text-transform:uppercase; color:#A0A0A0; font-weight:500">Web app</div>
+<div style="position:absolute; left:1440px; top:200px; font-size:13px; letter-spacing:0.12em; text-transform:uppercase; color:#A0A0A0; font-weight:500">iOS · Flutter app</div>
+
+<!-- ───────── Mobile 1 · Sign in ───────── -->
+<div style="position:absolute; left:1440px; top:240px">
+  <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+    <div style="height:100%; background:#2D6A4F; display:flex; flex-direction:column; color:#FAFAF8">
+      <!-- Brand mark (under status bar) -->
+      <div style="padding:80px 28px 0; font-size:22px; font-weight:800; letter-spacing:-0.03em; display:flex; align-items:center; gap:8px">
+        <div style="width:10px; height:10px; background:#D4663A; border-radius:2px"></div>
+        flavorful
+      </div>
+      <!-- Hero copy -->
+      <div style="padding:0 28px; margin-top:60px">
+        <div style="font-size:46px; font-weight:700; letter-spacing:-0.035em; line-height:0.98">Every recipe<br><span style="color:#D4663A">worth saving.</span></div>
+        <div style="font-size:16px; color:rgba(250,250,248,0.7); line-height:1.5; margin-top:20px">Paste a link from any food blog. We pull the recipe, ditch the life story.</div>
+      </div>
+      <!-- Sign-in panel -->
+      <div style="margin-top:auto; background:#F5EDD8; color:#2A2520; padding:36px 28px 60px; border-radius:24px 24px 0 0">
+        <div style="font-size:32px; font-weight:700; letter-spacing:-0.025em; line-height:1.0">What's cooking?</div>
+        <button style="margin-top:28px; width:100%; height:58px; background:#2D6A4F; border:none; border-radius:8px; display:flex; align-items:center; justify-content:center; gap:12px; font-family:inherit; font-size:15px; font-weight:600; color:#FAFAF8; box-shadow:0 8px 20px -6px rgba(45,106,79,0.35)">
+          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#fff" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#fff" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#fff" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Continue with Google
+        </button>
+      </div>
+    </div>
+  </x-import>
+</div>
+
+<!-- ───────── Mobile 2 · Library ───────── -->
+<div style="position:absolute; left:1440px; top:1180px">
+  <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+    <div style="height:100%; background:#FAFAF8; padding-top:62px; display:flex; flex-direction:column">
+      <!-- Top bar -->
+      <div style="padding:14px 20px; display:flex; align-items:center; justify-content:space-between">
+        <div style="font-size:18px; font-weight:800; letter-spacing:-0.025em; display:flex; align-items:center; gap:7px; color:#2A2520">
+          <div style="width:9px; height:9px; background:#D4663A; border-radius:2px"></div>
+          flavorful
+        </div>
+        <div style="width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#D4663A,#9F4A26); color:white; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600">M</div>
+      </div>
+      <!-- Title -->
+      <div style="padding:24px 20px 0">
+        <div style="font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:#A0A0A0; font-weight:500">Your library</div>
+        <div style="font-size:32px; font-weight:700; letter-spacing:-0.025em; margin-top:4px; color:#2A2520">42 recipes</div>
+      </div>
+      <!-- URL paste field -->
+      <div style="padding:20px 20px 0">
+        <div style="display:flex; align-items:stretch; background:#FFFFFF; border:1.5px solid #E2DFD7; border-radius:10px; box-shadow:0 2px 8px -2px rgba(0,0,0,0.06); overflow:hidden">
+          <div style="display:flex; align-items:center; padding:0 14px; color:#D4663A">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"/></svg>
+          </div>
+          <div style="flex:1; height:56px; display:flex; align-items:center; font-size:14px; color:#A8A8A8">Paste a recipe URL</div>
+        </div>
+      </div>
+      <!-- Card list -->
+      <div style="padding:20px 20px 90px; display:flex; flex-direction:column; gap:14px; overflow:auto">
+        <div style="background:#F5EDD8; border:1px solid #E5DBB8; border-radius:10px; padding:18px 18px 16px; box-shadow:0 8px 18px -6px rgba(80,50,20,0.10); position:relative">
+          <div style="position:absolute; top:14px; right:16px; color:#D4663A; font-size:14px">★</div>
+          <div class="mono" style="font-size:10px; color:#D4663A; letter-spacing:0.08em; text-transform:uppercase; font-weight:500">indianhealthyrecipes.com</div>
+          <div style="font-size:17px; font-weight:600; line-height:1.25; margin-top:8px; color:#2A2520">Paneer Butter Masala</div>
+          <div style="font-size:13px; color:#6B6B6B; line-height:1.45; margin-top:6px">Creamy tomato-cashew gravy, restaurant-style.</div>
+          <div class="mono" style="font-size:11px; color:#A0A0A0; margin-top:12px">45 min</div>
+        </div>
+        <div style="background:#F5EDD8; border:1px solid #E5DBB8; border-radius:10px; padding:18px 18px 16px; box-shadow:0 8px 18px -6px rgba(80,50,20,0.10)">
+          <div class="mono" style="font-size:10px; color:#D4663A; letter-spacing:0.08em; text-transform:uppercase; font-weight:500">cookieandkate.com</div>
+          <div style="font-size:17px; font-weight:600; line-height:1.25; margin-top:8px; color:#2A2520">Best Lentil Soup</div>
+          <div style="font-size:13px; color:#6B6B6B; line-height:1.45; margin-top:6px">Curry powder, lemon, and a creamy blended finish.</div>
+          <div class="mono" style="font-size:11px; color:#A0A0A0; margin-top:12px">55 min</div>
+        </div>
+        <div style="background:#F5EDD8; border:1px solid #E5DBB8; border-radius:10px; padding:18px 18px 16px; box-shadow:0 8px 18px -6px rgba(80,50,20,0.10)">
+          <div class="mono" style="font-size:10px; color:#D4663A; letter-spacing:0.08em; text-transform:uppercase; font-weight:500">smittenkitchen.com</div>
+          <div style="font-size:17px; font-weight:600; line-height:1.25; margin-top:8px; color:#2A2520">Brown Butter Gnocchi</div>
+          <div style="font-size:13px; color:#6B6B6B; line-height:1.45; margin-top:6px">Nutty brown butter, crispy sage, parmesan.</div>
+          <div class="mono" style="font-size:11px; color:#A0A0A0; margin-top:12px">30 min</div>
+        </div>
+        <div style="background:#F5EDD8; border:1px solid #E5DBB8; border-radius:10px; padding:18px 18px 16px; box-shadow:0 8px 18px -6px rgba(80,50,20,0.10)">
+          <div class="mono" style="font-size:10px; color:#D4663A; letter-spacing:0.08em; text-transform:uppercase; font-weight:500">bonappetit.com</div>
+          <div style="font-size:17px; font-weight:600; line-height:1.25; margin-top:8px; color:#2A2520">Charred Cabbage Wedges</div>
+          <div style="font-size:13px; color:#6B6B6B; line-height:1.45; margin-top:6px">Smoky wedges with anchovy-caper butter.</div>
+          <div class="mono" style="font-size:11px; color:#A0A0A0; margin-top:12px">35 min</div>
+        </div>
+      </div>
+    </div>
+  </x-import>
+</div>
+
+<!-- ───────── Mobile 3 · Add recipe (saving) ───────── -->
+<div style="position:absolute; left:1440px; top:2448px">
+  <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+    <div style="height:100%; background:#FAFAF8; padding-top:62px; display:flex; flex-direction:column">
+      <div style="padding:14px 20px; display:flex; align-items:center; justify-content:space-between">
+        <div style="font-size:18px; font-weight:800; letter-spacing:-0.025em; display:flex; align-items:center; gap:7px; color:#2A2520">
+          <div style="width:9px; height:9px; background:#D4663A; border-radius:2px"></div>
+          flavorful
+        </div>
+        <div style="width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#D4663A,#9F4A26); color:white; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600">M</div>
+      </div>
+      <div style="padding:24px 20px 0">
+        <div style="display:flex; align-items:center; gap:8px; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:#D4663A; font-weight:600">
+          <div style="width:7px; height:7px; border-radius:50%; background:#D4663A; box-shadow:0 0 0 4px rgba(212,102,58,0.15)"></div>
+          Saving recipe
+        </div>
+        <div style="font-size:32px; font-weight:700; letter-spacing:-0.025em; margin-top:6px; color:#2A2520">42 recipes</div>
+      </div>
+      <!-- URL filled, saving state -->
+      <div style="padding:20px 20px 0">
+        <div style="background:#FFFFFF; border:1.5px solid #D4663A; border-radius:10px; box-shadow:0 0 0 4px rgba(212,102,58,0.10); overflow:hidden">
+          <div style="display:flex; align-items:stretch">
+            <div style="display:flex; align-items:center; padding:0 14px; color:#D4663A">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"/></svg>
+            </div>
+            <div class="mono" style="flex:1; min-width:0; height:56px; display:flex; align-items:center; font-size:11px; color:#2A2520; padding-right:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">cookieandkate.com/best-lentil…</div>
+          </div>
+          <div style="border-top:1px solid #F0EEE8; padding:12px 16px; display:flex; align-items:center; gap:12px; background:#FAFAF8">
+            <div style="width:16px; height:16px; border-radius:50%; border:2px solid #2D6A4F; border-right-color:transparent; box-sizing:border-box"></div>
+            <div style="font-size:13px; color:#2A2520; font-weight:500">Fetching recipe…</div>
+          </div>
+        </div>
+      </div>
+      <!-- Existing cards below -->
+      <div style="padding:20px 20px 90px; display:flex; flex-direction:column; gap:14px; overflow:auto">
+        <div style="background:#F5EDD8; border:1px solid #E5DBB8; border-radius:10px; padding:18px 18px 16px; box-shadow:0 8px 18px -6px rgba(80,50,20,0.10); position:relative">
+          <div style="position:absolute; top:14px; right:16px; color:#D4663A; font-size:14px">★</div>
+          <div class="mono" style="font-size:10px; color:#D4663A; letter-spacing:0.08em; text-transform:uppercase; font-weight:500">indianhealthyrecipes.com</div>
+          <div style="font-size:17px; font-weight:600; line-height:1.25; margin-top:8px; color:#2A2520">Paneer Butter Masala</div>
+          <div style="font-size:13px; color:#6B6B6B; line-height:1.45; margin-top:6px">Creamy tomato-cashew gravy, restaurant-style.</div>
+          <div class="mono" style="font-size:11px; color:#A0A0A0; margin-top:12px">45 min</div>
+        </div>
+        <div style="background:#F5EDD8; border:1px solid #E5DBB8; border-radius:10px; padding:18px 18px 16px; box-shadow:0 8px 18px -6px rgba(80,50,20,0.10)">
+          <div class="mono" style="font-size:10px; color:#D4663A; letter-spacing:0.08em; text-transform:uppercase; font-weight:500">smittenkitchen.com</div>
+          <div style="font-size:17px; font-weight:600; line-height:1.25; margin-top:8px; color:#2A2520">Brown Butter Gnocchi</div>
+          <div style="font-size:13px; color:#6B6B6B; line-height:1.45; margin-top:6px">Nutty brown butter, crispy sage, parmesan.</div>
+          <div class="mono" style="font-size:11px; color:#A0A0A0; margin-top:12px">30 min</div>
+        </div>
+      </div>
+    </div>
+  </x-import>
+</div>
+
+<!-- ───────── Mobile 4 · Recipe detail ───────── -->
+<div style="position:absolute; left:1440px; top:3470px">
+  <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" height="{{ 1620 }}" hint-size="402px,1620px">
+    <div style="height:100%; background:#FAFAF8; padding-top:62px; display:flex; flex-direction:column">
+      <!-- Top bar with back -->
+      <div style="padding:14px 16px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #EFEDE6">
+        <div style="display:flex; align-items:center; gap:6px; font-size:15px; color:#2D6A4F; font-weight:500">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Library
+        </div>
+        <div style="display:flex; gap:14px; align-items:center">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#D4663A" stroke="#D4663A" stroke-width="2" stroke-linejoin="round"><polygon points="12 2 15 9 22 9 17 14 19 22 12 18 5 22 7 14 2 9 9 9 12 2"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6B6B6B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+        </div>
+      </div>
+      <!-- Original page link — prominent -->
+      <div style="padding:16px 20px 0">
+        <a style="display:flex; align-items:center; justify-content:center; gap:8px; height:46px; background:#D4663A; color:#FFFFFF; border-radius:8px; font-size:14px; font-weight:600; text-decoration:none; box-shadow:0 6px 14px -4px rgba(212,102,58,0.35)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          View on cookieandkate.com
+        </a>
+      </div>
+      <!-- Title block -->
+      <div style="padding:24px 20px 0">
+        <div class="mono" style="font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:#D4663A; font-weight:500">cookieandkate.com</div>
+        <div style="font-size:38px; font-weight:700; letter-spacing:-0.03em; line-height:1.0; margin-top:10px; color:#2A2520">Best Lentil Soup</div>
+        <div style="font-size:14px; color:#6B6B6B; line-height:1.5; margin-top:12px">Rich, comforting, surprisingly easy. Curry powder and lemon make this one to come back to all winter.</div>
+      </div>
+      <!-- Stats row -->
+      <div style="padding:20px 20px 0; display:flex; gap:24px; align-items:flex-end">
+        <div>
+          <div style="font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:#A0A0A0">Time</div>
+          <div style="font-size:18px; font-weight:600; margin-top:2px; color:#2A2520">55 min</div>
+        </div>
+        <div>
+          <div style="font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:#A0A0A0">Serves</div>
+          <div style="display:flex; align-items:center; gap:8px; margin-top:2px">
+            <div style="width:22px; height:22px; border-radius:4px; background:#FFFFFF; border:1px solid #E8E6E1; display:flex; align-items:center; justify-content:center; font-size:13px; color:#6B6B6B">−</div>
+            <div style="font-size:18px; font-weight:600; min-width:16px; text-align:center; color:#2A2520">4</div>
+            <div style="width:22px; height:22px; border-radius:4px; background:#2D6A4F; color:#FAFAF8; display:flex; align-items:center; justify-content:center; font-size:13px">+</div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:#A0A0A0">Difficulty</div>
+          <div style="font-size:18px; font-weight:600; margin-top:2px; color:#2A2520">Easy</div>
+        </div>
+      </div>
+      <!-- Ingredients -->
+      <div style="padding:32px 20px 0">
+        <div style="display:flex; align-items:baseline; justify-content:space-between; padding-bottom:10px; border-bottom:2px solid #2D6A4F">
+          <div style="font-size:18px; font-weight:700; letter-spacing:-0.015em; color:#2D6A4F">Ingredients</div>
+          <div class="mono" style="font-size:11px; color:#A0A0A0">14 · serves 4</div>
+        </div>
+        <div style="margin-top:6px">
+          <div style="display:flex; gap:12px; padding:10px 0; border-bottom:1px solid #F0EEE8">
+            <div style="width:18px; height:18px; border-radius:4px; background:#2D6A4F; display:flex; align-items:center; justify-content:center; color:#D4663A; font-size:10px; font-weight:700; flex-shrink:0; margin-top:1px">✓</div>
+            <div style="flex:1; opacity:0.4; font-size:14px; line-height:1.4; text-decoration:line-through"><span style="font-weight:600">¼ cup</span> olive oil</div>
+          </div>
+          <div style="display:flex; gap:12px; padding:10px 0; border-bottom:1px solid #F0EEE8">
+            <div style="width:18px; height:18px; border-radius:4px; background:#2D6A4F; display:flex; align-items:center; justify-content:center; color:#D4663A; font-size:10px; font-weight:700; flex-shrink:0; margin-top:1px">✓</div>
+            <div style="flex:1; opacity:0.4; font-size:14px; line-height:1.4; text-decoration:line-through"><span style="font-weight:600">1</span> onion <span style="color:#6B6B6B; font-weight:400">— finely chopped</span></div>
+          </div>
+          <div style="display:flex; gap:12px; padding:10px 0; border-bottom:1px solid #F0EEE8">
+            <div style="width:18px; height:18px; border-radius:4px; border:1.5px solid #C8C5BD; flex-shrink:0; margin-top:1px; box-sizing:border-box"></div>
+            <div style="flex:1; font-size:14px; line-height:1.4"><span style="font-weight:600">2</span> carrots <span style="color:#6B6B6B; font-weight:400">— peeled &amp; diced</span></div>
+          </div>
+          <div style="display:flex; gap:12px; padding:10px 0; border-bottom:1px solid #F0EEE8">
+            <div style="width:18px; height:18px; border-radius:4px; border:1.5px solid #C8C5BD; flex-shrink:0; margin-top:1px; box-sizing:border-box"></div>
+            <div style="flex:1; font-size:14px; line-height:1.4"><span style="font-weight:600">4 cloves</span> garlic <span style="color:#6B6B6B; font-weight:400">— pressed</span></div>
+          </div>
+          <div style="display:flex; gap:12px; padding:10px 0; border-bottom:1px solid #F0EEE8">
+            <div style="width:18px; height:18px; border-radius:4px; border:1.5px solid #C8C5BD; flex-shrink:0; margin-top:1px; box-sizing:border-box"></div>
+            <div style="flex:1; font-size:14px; line-height:1.4"><span style="font-weight:600">2 tsp</span> ground cumin</div>
+          </div>
+          <div style="display:flex; gap:12px; padding:10px 0; border-bottom:1px solid #F0EEE8">
+            <div style="width:18px; height:18px; border-radius:4px; border:1.5px solid #C8C5BD; flex-shrink:0; margin-top:1px; box-sizing:border-box"></div>
+            <div style="flex:1; font-size:14px; line-height:1.4"><span style="font-weight:600">1 can</span> diced tomatoes <span style="color:#6B6B6B; font-weight:400">— 28 oz</span></div>
+          </div>
+          <div style="display:flex; gap:12px; padding:10px 0; border-bottom:1px solid #F0EEE8">
+            <div style="width:18px; height:18px; border-radius:4px; border:1.5px solid #C8C5BD; flex-shrink:0; margin-top:1px; box-sizing:border-box"></div>
+            <div style="flex:1; font-size:14px; line-height:1.4"><span style="font-weight:600">1 cup</span> brown lentils</div>
+          </div>
+          <div style="padding:10px 0; font-size:12px; color:#A0A0A0; font-style:italic">+ 7 more ingredients</div>
+        </div>
+      </div>
+      <!-- Method -->
+      <div style="padding:24px 20px 0">
+        <div style="display:flex; align-items:baseline; justify-content:space-between; padding-bottom:10px; border-bottom:2px solid #2D6A4F">
+          <div style="font-size:18px; font-weight:700; letter-spacing:-0.015em; color:#2D6A4F">Method</div>
+          <div class="mono" style="font-size:11px; color:#A0A0A0">8 steps</div>
+        </div>
+        <div style="margin-top:18px; display:flex; flex-direction:column; gap:18px">
+          <div style="display:flex; gap:14px">
+            <div class="mono" style="font-size:13px; font-weight:600; color:#D4663A; min-width:26px; padding-top:2px">01</div>
+            <div style="font-size:15px; line-height:1.55; color:#2A2520">Warm the olive oil in a large Dutch oven over medium heat. Add the chopped onion and a pinch of salt. <span style="color:#6B6B6B">Cook until translucent, ~5 minutes.</span></div>
+          </div>
+          <div style="display:flex; gap:14px">
+            <div class="mono" style="font-size:13px; font-weight:600; color:#D4663A; min-width:26px; padding-top:2px">02</div>
+            <div style="font-size:15px; line-height:1.55; color:#2A2520">Add the carrots and cook until tender, <span style="color:#6B6B6B">6 to 8 minutes.</span></div>
+          </div>
+          <div style="display:flex; gap:14px">
+            <div class="mono" style="font-size:13px; font-weight:600; color:#D4663A; min-width:26px; padding-top:2px">03</div>
+            <div style="font-size:15px; line-height:1.55; color:#2A2520">Add garlic, cumin, curry powder and thyme. Pour in the tomatoes and cook until broken down.</div>
+          </div>
+          <div style="display:flex; gap:14px">
+            <div class="mono" style="font-size:13px; font-weight:600; color:#D4663A; min-width:26px; padding-top:2px">04</div>
+            <div style="font-size:15px; line-height:1.55; color:#2A2520">Add broth, water, lentils. Bring to a boil, then simmer for <span style="color:#6B6B6B">25–30 min</span> until tender.</div>
+          </div>
+          <div style="padding-left:40px; font-size:12px; color:#A0A0A0; font-style:italic">+ 4 more steps</div>
+        </div>
+      </div>
+      <!-- Notes -->
+      <div style="padding:24px 20px 90px">
+        <div style="padding-bottom:10px; border-bottom:2px solid #2D6A4F">
+          <div style="font-size:18px; font-weight:700; letter-spacing:-0.015em; color:#2D6A4F">Notes</div>
+        </div>
+        <div style="margin-top:16px; display:flex; flex-direction:column; gap:14px">
+          <div style="display:flex; gap:12px">
+            <div class="mono" style="font-size:12px; color:#D4663A; min-width:16px; padding-top:3px">→</div>
+            <div style="font-size:13px; line-height:1.55; color:#2A2520"><span style="font-weight:600">Make it vegan.</span> Already vegan if your broth is vegetable-based.</div>
+          </div>
+          <div style="display:flex; gap:12px">
+            <div class="mono" style="font-size:12px; color:#D4663A; min-width:16px; padding-top:3px">→</div>
+            <div style="font-size:13px; line-height:1.55; color:#2A2520"><span style="font-weight:600">Storage.</span> Up to 4 days in fridge, 3 months in freezer.</div>
+          </div>
+          <div style="display:flex; gap:12px">
+            <div class="mono" style="font-size:12px; color:#D4663A; min-width:16px; padding-top:3px">→</div>
+            <div style="font-size:13px; line-height:1.55; color:#2A2520"><span style="font-weight:600">Lentil variations.</span> French green lentils hold shape; red lentils break down for smoother soup.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </x-import>
+</div>
+
+<!-- ───────── Closing note ───────── -->
+<div style="position:absolute; left:80px; top:5330px; width:1280px">
+  <div style="background:#FEF4A8; padding:20px 24px; font:14px/1.5 'Geist',system-ui; box-shadow:0 1px 3px rgba(0,0,0,.08); transform:rotate(-0.5deg); width:520px; border-radius:2px; color:#2A2520">
+    <div style="font-weight:600; margin-bottom:6px">Next up</div>
+    Both surfaces translated from the same design system — sage / burnt orange / warm cream cards. Tell me which one to build out first (interactive web prototype, or the Flutter iOS mocks pushed further), and any tweaks on the mobile layouts before then.
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

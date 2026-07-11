@@ -1,0 +1,22 @@
+[project]
+name = "flavorful"
+version = "0.1.0"
+description = "A recipe extraction and management app."
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "beautifulsoup4>=4.15.0",
+    "fastapi[standard]>=0.138.0",
+    "html2text>=2025.4.15",
+    "playwright>=1.60.0",
+    "python-dotenv>=1.2.2",
+    "requests>=2.34.2",
+    "slowapi>=0.1.9",
+    "supabase>=2.31.0",
+    "tenacity>=9.1.4",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]

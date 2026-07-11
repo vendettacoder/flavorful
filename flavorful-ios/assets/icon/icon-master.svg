@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#F8EFD8"></stop>
+      <stop offset="100%" stop-color="#E8DBB8"></stop>
+    </radialGradient>
+    <radialGradient id="tomatoShade" cx="35%" cy="30%" r="85%">
+      <stop offset="0%" stop-color="rgba(255,200,150,0.20)"></stop>
+      <stop offset="55%" stop-color="rgba(255,255,255,0)"></stop>
+      <stop offset="100%" stop-color="rgba(120,30,15,0.35)"></stop>
+    </radialGradient>
+  </defs>
+
+  
+  <rect width="1024" height="1024" fill="url(#bg)"></rect>
+
+  
+  <ellipse cx="512" cy="830" rx="280" ry="22" fill="rgba(120,40,20,0.18)"></ellipse>
+
+  
+  <path d="M 512 240 C 762 240 880 420 880 580 C 880 760 720 830 512 830 C 304 830 144 760 144 580 C 144 420 262 240 512 240 Z" fill="#D8513A"></path>
+
+  
+  <path d="M 512 240 C 762 240 880 420 880 580 C 880 760 720 830 512 830 C 304 830 144 760 144 580 C 144 420 262 240 512 240 Z" fill="url(#tomatoShade)"></path>
+
+  
+  <g stroke="rgba(150,40,20,0.18)" stroke-width="4" fill="none" stroke-linecap="round">
+    <path d="M 350 320 Q 320 540 380 800"></path>
+    <path d="M 670 320 Q 700 540 640 800"></path>
+  </g>
+
+  
+  <ellipse cx="370" cy="370" rx="100" ry="60" transform="rotate(-30 370 370)" fill="rgba(255,255,255,0.20)"></ellipse>
+  <ellipse cx="340" cy="350" rx="50" ry="22" transform="rotate(-30 340 350)" fill="rgba(255,255,255,0.32)"></ellipse>
+
+  
+  <g transform="translate(512 260)">
+    
+    <path d="M 0 0 L -120 -90 Q -130 -150 -90 -180 Q -40 -160 -10 -90 Z" fill="#1F4D38"></path>
+    <path d="M 0 0 L 120 -90 Q 130 -150 90 -180 Q 40 -160 10 -90 Z" fill="#1F4D38"></path>
+    
+    <path d="M 0 0 L -160 -50 Q -200 -110 -160 -150 Q -100 -130 -50 -60 Z" fill="#2D6A4F"></path>
+    <path d="M 0 0 L 160 -50 Q 200 -110 160 -150 Q 100 -130 50 -60 Z" fill="#2D6A4F"></path>
+    
+    <path d="M 0 0 L -50 -120 Q 0 -180 50 -120 L 0 0 Z" fill="#3A8060"></path>
+    
+    <path d="M -50 -110 Q 0 -160 40 -120" stroke="rgba(255,255,255,0.25)" stroke-width="6" fill="none" stroke-linecap="round"></path>
+    
+    <rect x="-12" y="-150" width="24" height="40" rx="6" fill="#3A8060"></rect>
+  </g>
+</svg>

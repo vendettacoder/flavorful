@@ -1,0 +1,98 @@
+name: flavorful
+description: "Flavorful — an iOS-first recipe keeper. Paste a food-blog URL, the backend scrapes it, browse and cook from your saved recipes."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+  # State management — server-owned data with a client cache (handoff recommendation).
+  flutter_riverpod: ^2.6.1
+
+  # Supabase auth (Google OAuth) — yields the access token sent to the backend.
+  supabase_flutter: ^2.8.0
+
+  # Native Sign in with Apple (App Store Review Guideline 4.8). Yields an Apple
+  # identity token exchanged with Supabase via signInWithIdToken.
+  sign_in_with_apple: ^6.1.4
+
+  # SHA-256 hashing of the Apple sign-in nonce (replay protection).
+  crypto: ^3.0.6
+
+  # Literal SVG icons from the design (chain-link, external-link, star, trash, chevron, Google G).
+  flutter_svg: ^2.0.17
+
+  # Networking for the real backend (used by HttpRecipeRepository; mock repo needs no network).
+  dio: ^5.7.0
+
+  # Open the original recipe page in the system browser.
+  url_launcher: ^6.3.1
+
+  # Persist the sign-in provider (Google/Apple) across launches — the tapped
+  # provider is the only reliable signal for a linked (same-email) account.
+  shared_preferences: ^2.5.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+
+  # Generates the iOS AppIcon asset catalog from the master 1024 PNG.
+  flutter_launcher_icons: ^0.14.4
+
+# App icon — rasterized from assets/icon/icon-master.svg (design handoff).
+# remove_alpha_ios strips the alpha channel App Store Connect rejects.
+flutter_launcher_icons:
+  ios: true
+  android: false
+  image_path: "assets/icon/icon.png"
+  remove_alpha_ios: true
+  background_color_ios: "#F8EFD8"
+
+flutter:
+  uses-material-design: true
+
+  # Geist + Geist Mono are bundled (SIL OFL — see fonts/OFL.txt) rather than
+  # fetched at runtime, so typography is deterministic and works offline.
+  fonts:
+    # Primary sans — Inter Tight (matches the web). Variable font; one file
+    # covers all weights via the wght axis.
+    - family: InterTight
+      fonts:
+        - asset: fonts/InterTight-Variable.ttf
+          weight: 400
+        - asset: fonts/InterTight-Variable.ttf
+          weight: 500
+        - asset: fonts/InterTight-Variable.ttf
+          weight: 600
+        - asset: fonts/InterTight-Variable.ttf
+          weight: 700
+        - asset: fonts/InterTight-Variable.ttf
+          weight: 800
+    - family: Geist
+      fonts:
+        - asset: fonts/Geist-Regular.ttf
+          weight: 400
+        - asset: fonts/Geist-Medium.ttf
+          weight: 500
+        - asset: fonts/Geist-SemiBold.ttf
+          weight: 600
+        - asset: fonts/Geist-Bold.ttf
+          weight: 700
+        - asset: fonts/Geist-ExtraBold.ttf
+          weight: 800
+    - family: GeistMono
+      fonts:
+        - asset: fonts/GeistMono-Regular.ttf
+          weight: 400
+        - asset: fonts/GeistMono-Medium.ttf
+          weight: 500
+        - asset: fonts/GeistMono-SemiBold.ttf
+          weight: 600
