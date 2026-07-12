@@ -1,7 +1,7 @@
 name: flavorful
 description: "Flavorful — an iOS-first recipe keeper. Paste a food-blog URL, the backend scrapes it, browse and cook from your saved recipes."
 publish_to: 'none'
-version: 1.0.0+2
+version: 1.0.0+3
 
 environment:
   sdk: ^3.12.2
