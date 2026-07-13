@@ -204,13 +204,17 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
                 Text('${recipe.totalMinutes} min', style: AppText.statValue())),
             const SizedBox(width: 24),
           ],
-          _stat(
-            'SERVES',
-            ServingsStepper(
-              value: servings,
-              onChanged: (v) => setState(() => _servings = v),
+          // Only show the servings stepper when the source actually specified
+          // a servings count — otherwise it's a meaningless "1" to scale from.
+          if (recipe.servingsKnown) ...[
+            _stat(
+              'SERVES',
+              ServingsStepper(
+                value: servings,
+                onChanged: (v) => setState(() => _servings = v),
+              ),
             ),
-          ),
+          ],
           if (recipe.difficulty != null) ...[
             const SizedBox(width: 24),
             _stat('DIFFICULTY',
@@ -241,8 +245,10 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
         children: [
           SectionHeader(
             title: 'Ingredients',
-            meta: '${recipe.ingredients.length} · serves '
-                '${_servings ?? recipe.servings}',
+            meta: recipe.servingsKnown
+                ? '${recipe.ingredients.length} · serves '
+                    '${_servings ?? recipe.servings}'
+                : '${recipe.ingredients.length} ingredients',
           ),
           const SizedBox(height: 6),
           for (var i = 0; i < recipe.ingredients.length; i++)

@@ -126,6 +126,7 @@ class Recipe {
     required this.notesFromPage,
     required this.isFavorited,
     required this.savedAt,
+    this.servingsKnown = true,
     this.difficulty,
     this.heroImageUrl,
     this.nutrition = const {},
@@ -137,7 +138,10 @@ class Recipe {
   final String title;
   final String description; // scraped summary, may be empty
   final int totalMinutes; // "55 min" → 55
-  final int servings; // servings the recipe was scraped at
+  final int servings; // servings the recipe was scraped at (1 when unknown)
+  /// Whether [servings] came from the page. False when the source had no
+  /// servings count and it fell back to 1 — the UI hides the stepper then.
+  final bool servingsKnown;
   final String? difficulty; // "Easy" | "Medium" | "Hard"
   final List<Ingredient> ingredients;
   final List<String> method; // ordered step bodies
@@ -170,6 +174,7 @@ class Recipe {
         description: description,
         totalMinutes: totalMinutes,
         servings: servings ?? this.servings,
+        servingsKnown: servingsKnown,
         difficulty: difficulty,
         ingredients: ingredients,
         method: method,
@@ -191,6 +196,8 @@ class Recipe {
       totalMinutes:
           ((json['total_minutes'] ?? json['totalMinutes'] ?? 0) as num).toInt(),
       servings: ((json['servings'] ?? 1) as num).toInt(),
+      servingsKnown: (json['servings_known'] as bool?) ??
+          servingsKnownFrom(json['servings']),
       difficulty: json['difficulty'] as String?,
       ingredients: ((json['ingredients'] ?? []) as List)
           .map((e) => Ingredient.fromJson(e as Map<String, dynamic>))
@@ -229,6 +236,7 @@ class Recipe {
       description: (meta['description'] as String?)?.trim() ?? '',
       totalMinutes: 0, // backend has no time field
       servings: parseServings(meta['servings']),
+      servingsKnown: servingsKnownFrom(meta['servings']),
       difficulty: null,
       ingredients: ((meta['ingredients'] as List?) ?? const [])
           .map((e) => e is Map
@@ -255,6 +263,7 @@ class Recipe {
         'description': description,
         'total_minutes': totalMinutes,
         'servings': servings,
+        'servings_known': servingsKnown,
         'difficulty': difficulty,
         'ingredients': ingredients.map((e) => e.toJson()).toList(),
         'method': method,
@@ -274,6 +283,17 @@ int parseServings(dynamic value) {
   if (match == null) return 1;
   final n = int.parse(match.group(0)!);
   return n < 1 ? 1 : n;
+}
+
+/// Whether a servings value from the source is a real, usable count (a positive
+/// number). False for null, empty, or non-numeric values — those fall back to 1
+/// via [parseServings], and the UI hides the servings stepper in that case.
+bool servingsKnownFrom(dynamic value) {
+  if (value == null) return false;
+  if (value is num) return value.toInt() >= 1;
+  final match = RegExp(r'\d+').firstMatch(value.toString());
+  if (match == null) return false;
+  return int.parse(match.group(0)!) >= 1;
 }
 
 /// Normalizes the backend `nutrition_information` map (macro → "amount unit"),
