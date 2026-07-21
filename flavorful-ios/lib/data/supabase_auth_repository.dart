@@ -129,12 +129,15 @@ class SupabaseAuthRepository implements AuthRepository {
   Future<void> signInWithGoogle() async {
     _lastProvider = 'google';
     await _persistProvider('google');
-    // Opens the system browser; the session returns via the deep link
-    // configured in AppConfig.authRedirectUrl and surfaces on authStateChanges.
+    // Present the OAuth page in an in-app SFSafariViewController rather than
+    // the external Safari app (App Store Guideline 4 — external-browser sign-in
+    // is rejected). SFSafariViewController is Apple's recommended API and,
+    // unlike an embedded WKWebView, Google permits OAuth in it. The session
+    // returns via the AppConfig.authRedirectUrl deep link on authStateChanges.
     await _client.auth.signInWithOAuth(
       OAuthProvider.google,
       redirectTo: AppConfig.authRedirectUrl,
-      authScreenLaunchMode: LaunchMode.externalApplication,
+      authScreenLaunchMode: LaunchMode.inAppBrowserView,
     );
   }
 
