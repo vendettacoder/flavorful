@@ -7,6 +7,7 @@ from contextlib import asynccontextmanager
 import html2text
 from dotenv import load_dotenv
 from fastapi import FastAPI, Header, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
 from playwright.async_api import Browser, async_playwright
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
@@ -16,6 +17,7 @@ from supabase import create_client
 import url_extractor
 from recipe_dao import RecipeDao, RecipeDto, get_db_client
 from recipe_extractor import extract_recipe
+from recipe_timing import time_recipe_save, timed_step
 from url_safety import validate_public_url
 
 load_dotenv()
@@ -133,15 +135,27 @@ app = FastAPI(lifespan=lifespan)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-# No CORS middleware: the clients are native iOS/Android apps, which don't
-# enforce CORS. If a browser-based web client is added later, re-add
-# fastapi.middleware.cors.CORSMiddleware with the production origin(s).
+# Allow only the browser origins explicitly set for this server.
+# Leaving CORS_ORIGINS unset preserves the existing production behavior.
+cors_origins = [
+    origin.strip()
+    for origin in os.getenv("CORS_ORIGINS", "").split(",")
+    if origin.strip()
+]
+if "*" in cors_origins:
+    raise ValueError("CORS_ORIGINS must list exact origins, not *")
+if cors_origins:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=cors_origins,
+        allow_methods=["GET", "POST", "DELETE"],
+        allow_headers=["auth-header", "Content-Type"],
+    )
 
 
 @app.get("/")
 async def health():
-    """Liveness probe — returns 200 once startup (incl. Chromium launch) is done.
-    Gives Fly a clean health signal and avoids a 404 on the base URL."""
+    """Check that the server responds. Does not check Supabase or Chromium."""
     return {"status": "ok"}
 
 
@@ -156,67 +170,89 @@ async def get_recipes(auth_header: str = Header(None)):
 @app.get("/get-recipe/{url:path}")
 @limiter.limit("10/minute;100/day")
 async def recipe(request: Request, url: str, auth_header: str = Header(None)):
-    supabase_client = get_db_client(auth_header)
-    validate_public_url(url)  # SSRF guard — raises 400 on internal/invalid URLs
-    recipe_dao = RecipeDao(supabase_client=supabase_client)
-    result = recipe_dao.get_recipe(public_url=url)
-    if result:
-        return f"User ID={result['user_id']} already has a recipe stored .. inserted Recipe ID={result['recipe_id']}"
+    with time_recipe_save() as save_timing:
+        with timed_step("db_client"):
+            supabase_client = get_db_client(auth_header)
+        with timed_step("url_validation"):
+            validate_public_url(url)  # Keep the existing SSRF guard.
+        recipe_dao = RecipeDao(supabase_client=supabase_client)
+        with timed_step("db_duplicate_lookup"):
+            result = recipe_dao.get_recipe(public_url=url)
+        if result:
+            save_timing["result"] = "already_saved"
+            return f"User ID={result['user_id']} already has a recipe stored .. inserted Recipe ID={result['recipe_id']}"
 
-    # Enforce the per-user recipe limit BEFORE the costly scrape + LLM call.
-    limit = recipe_dao.get_user_limit()
-    if recipe_dao.count_recipes() >= limit:
-        raise HTTPException(
-            status_code=409,
-            detail=f"You've reached your limit of {limit} recipes. "
-            "Delete one to make room.",
+        # Enforce the per-user recipe limit BEFORE the costly scrape + LLM call.
+        with timed_step("db_limit_lookup"):
+            limit = recipe_dao.get_user_limit()
+        with timed_step("db_recipe_count"):
+            recipe_count = recipe_dao.count_recipes()
+        if recipe_count >= limit:
+            raise HTTPException(
+                status_code=409,
+                detail=f"You've reached your limit of {limit} recipes. "
+                "Delete one to make room.",
+            )
+
+        if not os.getenv("OPEN_ROUTER_API_KEY", "").strip():
+            raise HTTPException(
+                status_code=503,
+                detail="Recipe extraction is not configured. "
+                "Set OPEN_ROUTER_API_KEY on the server.",
+            )
+
+        try:
+            with timed_step("browser_ready"):
+                recipe_browser = await get_browser()
+            with timed_step("page_read"):
+                page_content = await url_extractor.extract_url_contents(
+                    browser=recipe_browser, url=url
+                )
+        except HTTPException:
+            raise
+        except Exception:
+            # The failed timing record contains the error type, not the URL.
+            raise HTTPException(
+                status_code=400,
+                detail="Couldn't open that link. Check the URL and try again.",
+            )
+
+        with timed_step("page_to_text") as text_timing:
+            converter = html2text.HTML2Text()
+            converter.ignore_links = True
+            page_markdown = converter.handle(str(page_content))
+            text_timing["page_chars"] = len(page_markdown)
+        with timed_step("model_total") as model_timing:
+            recipe_json = extract_recipe(page_content=page_markdown)
+            if not recipe_json:
+                model_timing["status"] = "invalid_response"
+        if not recipe_json:
+            raise HTTPException(
+                status_code=503,
+                detail="Couldn't extract this recipe right now — the recipe AI "
+                "service is busy or rate-limited. Please try again in a minute.",
+            )
+
+        # No real recipe on the page: the LLM returns {"no_recipe": true}, or the
+        # result has neither a name nor ingredients. Don't store an empty shell.
+        no_recipe = recipe_json.get("no_recipe") is True
+        has_content = bool(recipe_json.get("recipe_name")) or bool(
+            recipe_json.get("ingredients")
         )
+        if no_recipe or not has_content:
+            raise HTTPException(
+                status_code=422,
+                detail="No recipe found on that page.",
+            )
 
-    try:
-        page_content = await url_extractor.extract_url_contents(
-            browser=await get_browser(), url=url
+        recipe_dto = RecipeDto(
+            public_url=url,
+            recipe_json=recipe_json,
         )
-    except HTTPException:
-        raise
-    except Exception as e:
-        # Log the real error server-side; return a generic message to the client.
-        print(f"[fetch error] url={url} error={e}", flush=True)
-        raise HTTPException(
-            status_code=400,
-            detail="Couldn't open that link. Check the URL and try again.",
-        )
-
-    converter = html2text.HTML2Text()
-    converter.ignore_links = True
-
-    page_markdown = converter.handle(str(page_content))
-    recipe_json = extract_recipe(page_content=page_markdown)
-    if not recipe_json:
-        raise HTTPException(
-            status_code=503,
-            detail="Couldn't extract this recipe right now — the recipe AI "
-            "service is busy or rate-limited. Please try again in a minute.",
-        )
-
-    # No real recipe on the page: the LLM returns {"no_recipe": true}, or the
-    # result has neither a name nor ingredients. Don't store an empty shell.
-    no_recipe = recipe_json.get("no_recipe") is True
-    has_content = bool(recipe_json.get("recipe_name")) or bool(
-        recipe_json.get("ingredients")
-    )
-    if no_recipe or not has_content:
-        raise HTTPException(
-            status_code=422,
-            detail="No recipe found on that page.",
-        )
-
-    recipe_dto = RecipeDto(
-        public_url=url,
-        recipe_json=recipe_json,
-    )
-    recipe_id = recipe_dao.insert(recipe_dto)
-
-    return f"Successfully inserted Recipe ID={recipe_id}"
+        with timed_step("db_insert"):
+            recipe_id = recipe_dao.insert(recipe_dto)
+        save_timing["result"] = "saved"
+        return f"Successfully inserted Recipe ID={recipe_id}"
 
 
 @app.get("/search-recipes")

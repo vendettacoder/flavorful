@@ -9,6 +9,9 @@ wheels/
 
 # Secrets — provided at runtime via `fly secrets set`, never baked into the image.
 .env
+.env.*
+.local/
+supabase/
 
 # Not part of the backend.
 flavorful-ios/
@@ -18,3 +21,7 @@ PRIVACY_POLICY.md
 .git
 .gitignore
 .python-version
+.pytest_cache/
+tests/
+scripts/
+docs/

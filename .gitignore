@@ -9,3 +9,13 @@ wheels/
 # Virtual environments
 .venv
 .env
+.env.*
+!.env.example
+
+# Local checks and server logs
+.pytest_cache/
+.local/
+
+# Supabase account and project-link state
+supabase/.temp/
+supabase/.branches/

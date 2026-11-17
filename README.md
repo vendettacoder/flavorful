@@ -4,6 +4,13 @@ An iOS-first recipe keeper. Paste a food-blog URL; the backend scrapes the page,
 an AI model extracts the structured recipe, and you browse and cook from your
 saved cookbook.
 
+## Server development without iOS
+
+You can run the Python server locally with the existing hosted Supabase project.
+You do not need Flutter, Xcode, or Docker for this setup.
+See [Local development](docs/local-development.md) for setup, account sign-in,
+and access from a future web interface.
+
 ## Architecture
 
 ```
@@ -54,7 +61,7 @@ saved cookbook.
 
 ## Secrets
 
-The backend reads four environment variables. Locally they live in `.env`
+The backend reads the settings below. Locally they live in `.env`
 (**gitignored — never commit it**); in production they are Fly.io secrets.
 
 | Variable | What it is | Where to get it |
@@ -63,6 +70,7 @@ The backend reads four environment variables. Locally they live in `.env`
 | `SUPABASE_KEY` | Anon/publishable key (RLS-scoped client) | Supabase → Project Settings → API |
 | `SUPABASE_SERVICE_ROLE_KEY` | Service-role key — used only to delete auth users on account deletion | Supabase → Project Settings → API (keep secret!) |
 | `OPEN_ROUTER_API_KEY` | OpenRouter API key for recipe extraction | OpenRouter → Keys |
+| `CORS_ORIGINS` | Comma-separated browser origins; empty by default | Set local origins in `.env`; see `.env.example` |
 
 Local `.env` template:
 
@@ -80,17 +88,24 @@ OPEN_ROUTER_API_KEY=YOUR-OPENROUTER-KEY
 ## Backend — local development
 
 ```bash
-# 1. Install dependencies (creates .venv from uv.lock)
-uv sync
+# 1. Install Python packages and Chromium.
+make setup
 
-# 2. Install the Chromium browser Playwright drives
-uv run playwright install chromium
+# 2. Create .env, then edit its values. Do not replace an existing .env.
+cp -n .env.example .env
+chmod 600 .env
 
-# 3. Run the dev server (hot reload) on http://localhost:8000
-uv run fastapi dev main.py
+# 3. Check hosted Supabase without reading recipe rows or changing data.
+make check
+
+# 4. Run the local server. Override the port with: make dev PORT=8002
+make dev
 ```
 
-Health check: `curl http://localhost:8000/` → `{"status":"ok"}`.
+Health check: `curl http://127.0.0.1:8001/` → `{"status":"ok"}`.
+API documentation: http://127.0.0.1:8001/docs.
+The health check does not check Supabase or OpenRouter.
+The iOS simulator still expects port 8000; use `make dev PORT=8000` for that client.
 
 Key endpoints (all require `auth-header: Bearer <supabase_access_token>`):
 
@@ -106,7 +121,7 @@ Key endpoints (all require `auth-header: Bearer <supabase_access_token>`):
 Run the tests:
 
 ```bash
-uv run pytest
+make test
 ```
 
 ## Backend — deploy to Fly.io

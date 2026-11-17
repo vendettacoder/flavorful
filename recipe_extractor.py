@@ -10,6 +10,8 @@ from tenacity import (
     wait_exponential,
 )
 
+from recipe_timing import timed_step
+
 # Fast, cheap models well-suited to structured JSON extraction. Primary is
 # Google's Flash-Lite (OpenRouter's pick for high-volume extraction); fallback
 # is OpenAI's nano on a different provider for resilience.
@@ -105,7 +107,7 @@ PAGE_CONTENT:
 def _log_retry_attempt(retry_state):
     print(
         f"[RETRY LOG] Attempt #{retry_state.attempt_number} failed. "
-        f"Exception: {retry_state.outcome.exception()}. "
+        f"Exception type: {type(retry_state.outcome.exception()).__name__}. "
         f"Waiting {retry_state.next_action.sleep} seconds before next attempt...",
         flush=True,
     )
@@ -123,7 +125,7 @@ def _handle_extraction_fallback(retry_state) -> dict | None:
 
     print(
         f"[RETRY LOG] Attempt #{retry_state.attempt_number} failed. "
-        f"Exception: {retry_state.outcome.exception()}. "
+        f"Exception type: {type(retry_state.outcome.exception()).__name__}. "
         f"Now falling back to {MODEL_FALLBACK} for recipe extraction ...",
         flush=True,
     )
@@ -163,44 +165,56 @@ def _stop_after_two(retry_state: RetryCallState) -> bool:
     before_sleep=_log_retry_attempt,
     retry_error_callback=_handle_extraction_fallback,
 )
-def extract_recipe(
-    page_content: str, model=MODEL_PRIMARY
-) -> dict | None:
+def extract_recipe(page_content: str, model=MODEL_PRIMARY) -> dict | None:
     user_content = f"{RECIPE_EXTRACTION_PROMPT}\n{page_content}"
     open_router_api_key = os.getenv("OPEN_ROUTER_API_KEY")
-    response = requests.post(
-        url="https://openrouter.ai/api/v1/chat/completions",
-        headers={
-            "Authorization": f"Bearer {open_router_api_key}",
-            "Content-Type": "application/json",
-        },
-        data=json.dumps(
-            {
-                "model": model,
-                "max_tokens": 5000,
-                "messages": [
-                    {
-                        "role": "user",
-                        "content": user_content,
-                    }
-                ],
-            }
-        ),
-        timeout=60,  # don't let a hung OpenRouter request tie up the worker
-    )
+    with timed_step(
+        "model_attempt",
+        model=model,
+        page_chars=len(page_content),
+        prompt_chars=len(user_content),
+    ) as attempt_timing:
+        response = requests.post(
+            url="https://openrouter.ai/api/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {open_router_api_key}",
+                "Content-Type": "application/json",
+            },
+            data=json.dumps(
+                {
+                    "model": model,
+                    "max_tokens": 5000,
+                    "messages": [
+                        {
+                            "role": "user",
+                            "content": user_content,
+                        }
+                    ],
+                }
+            ),
+            timeout=60,  # don't let a hung OpenRouter request tie up the worker
+        )
 
-    response.raise_for_status()  # Raising here to let tenacity see the error and retry if necessary
-    return _get_recipe_json(response=response)
+        attempt_timing["http_status"] = response.status_code
+        response.raise_for_status()  # Preserve the existing retry policy.
+        recipe_json = _get_recipe_json(response=response, timing=attempt_timing)
+        if recipe_json is None:
+            attempt_timing["status"] = "invalid_response"
+        return recipe_json
 
 
-def _get_recipe_json(response) -> dict | None:
+def _get_recipe_json(response, timing: dict | None = None) -> dict | None:
     try:
         response_json = response.json()
+        if timing is not None:
+            usage = response_json.get("usage")
+            if isinstance(usage, dict):
+                for key in ("prompt_tokens", "completion_tokens"):
+                    value = usage.get(key)
+                    if type(value) is int and value >= 0:
+                        timing[key] = value
         if "choices" not in response_json:
-            print(
-                f"Choices not in response json, response_json={response_json}",
-                flush=True,
-            )
+            print("Choices not in response json", flush=True)
             return None
 
         choices = response_json.get("choices", [])
@@ -220,5 +234,5 @@ def _get_recipe_json(response) -> dict | None:
         return {"error": f"HTTP error occurred: {http_err}", "response": response.text}
 
     except Exception as e:
-        print(f"Exception extracting recipe json from LLM response {e}", flush=True)
+        print(f"Exception extracting recipe json: {type(e).__name__}", flush=True)
         return None
