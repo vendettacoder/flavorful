@@ -55,13 +55,16 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                       ),
                       child: IntrinsicHeight(
                         child: Column(
+                          crossAxisAlignment: kIsWeb
+                              ? CrossAxisAlignment.stretch
+                              : CrossAxisAlignment.center,
                           children: [
                             Expanded(
                               child: Padding(
                                 padding: const EdgeInsets.fromLTRB(
-                                  28,
+                                  kIsWeb ? 0 : 28,
                                   60,
-                                  28,
+                                  kIsWeb ? 0 : 28,
                                   36,
                                 ),
                                 child: Column(
@@ -192,7 +195,7 @@ class _SignInSheet extends StatelessWidget {
             ? BorderRadius.circular(AppRadii.sheet)
             : const BorderRadius.vertical(top: Radius.circular(AppRadii.sheet)),
       ),
-      padding: const EdgeInsets.fromLTRB(28, 36, 28, 60),
+      padding: const EdgeInsets.fromLTRB(28, 36, 28, kIsWeb ? 24 : 60),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
