@@ -29,6 +29,8 @@ class _FakeAuthRepository implements AuthRepository {
   Future<void> signInWithApple() async {}
   @override
   Future<void> signOut() async {}
+  @override
+  Future<void> completeWebSignIn(Uri uri) async {}
 }
 
 /// Recipe repo that only counts how many times the list was fetched.
@@ -56,14 +58,14 @@ class _CountingRecipeRepository implements RecipeRepository {
 }
 
 AuthSession _session(String token) => AuthSession(
-      token: token,
-      email: 'cook@example.com', // SAME email across token changes
-      userInitial: 'C',
-    );
+  userId: 'cook-id',
+  token: token,
+  email: 'cook@example.com', // SAME email across token changes
+  userInitial: 'C',
+);
 
 void main() {
-  test(
-      'recipes refetch when the token changes for the same user '
+  test('recipes refetch when the token changes for the same user '
       '(stale-token-on-launch self-heals)', () async {
     final auth = _FakeAuthRepository(_session('stale-token'));
     final recipes = _CountingRecipeRepository();
@@ -86,7 +88,7 @@ void main() {
     addTearDown(sub.close);
 
     // First load: fetched once with the (stale) launch token.
-    await container.read(recipesProvider.future);
+    await container.read(recipesProvider.notifier).loaded;
     expect(recipes.getAllCount, 1);
 
     // Supabase delivers a fresh token for the SAME user moments later.

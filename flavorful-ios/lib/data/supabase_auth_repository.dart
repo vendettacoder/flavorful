@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:crypto/crypto.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -61,9 +62,11 @@ class SupabaseAuthRepository implements AuthRepository {
     // The Google `picture` persists in metadata even after linking Apple, so
     // only show it when the active provider is Google. Apple gives no photo →
     // the avatar falls back to the initial.
-    final avatarUrl =
-        provider == 'google' ? _avatarUrl(session.user.userMetadata) : null;
+    final avatarUrl = provider == 'google'
+        ? _avatarUrl(session.user.userMetadata)
+        : null;
     return AuthSession(
+      userId: session.user.id,
       token: session.accessToken,
       email: email,
       userInitial: email.isNotEmpty ? email[0].toUpperCase() : '?',
@@ -82,7 +85,8 @@ class SupabaseAuthRepository implements AuthRepository {
     String? bestAt;
     for (final id in user.identities ?? const []) {
       final at = id.lastSignInAt; // ISO8601 string, sorts lexicographically
-      if (best == null || (at != null && (bestAt == null || at.compareTo(bestAt) > 0))) {
+      if (best == null ||
+          (at != null && (bestAt == null || at.compareTo(bestAt) > 0))) {
         best = id.provider;
         bestAt = at;
       }
@@ -137,7 +141,9 @@ class SupabaseAuthRepository implements AuthRepository {
     await _client.auth.signInWithOAuth(
       OAuthProvider.google,
       redirectTo: AppConfig.authRedirectUrl,
-      authScreenLaunchMode: LaunchMode.inAppBrowserView,
+      authScreenLaunchMode: kIsWeb
+          ? LaunchMode.platformDefault
+          : LaunchMode.inAppBrowserView,
     );
   }
 
@@ -145,6 +151,13 @@ class SupabaseAuthRepository implements AuthRepository {
   Future<void> signInWithApple() async {
     _lastProvider = 'apple';
     await _persistProvider('apple');
+    if (kIsWeb) {
+      await _client.auth.signInWithOAuth(
+        OAuthProvider.apple,
+        redirectTo: AppConfig.authRedirectUrl,
+      );
+      return;
+    }
     // Native Sign in with Apple: request the Apple ID credential with a hashed
     // nonce, then exchange the returned identity token with Supabase. The raw
     // nonce is sent to Supabase so it can verify the token's `nonce` claim.
@@ -171,6 +184,11 @@ class SupabaseAuthRepository implements AuthRepository {
       idToken: idToken,
       nonce: rawNonce,
     );
+  }
+
+  @override
+  Future<void> completeWebSignIn(Uri uri) async {
+    await _client.auth.getSessionFromUrl(uri);
   }
 
   @override

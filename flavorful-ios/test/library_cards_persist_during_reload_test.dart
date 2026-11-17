@@ -7,6 +7,8 @@ import 'package:flavorful/models/recipe.dart';
 import 'package:flavorful/providers/providers.dart';
 import 'package:flavorful/screens/library_screen.dart';
 import 'package:flavorful/widgets/recipe_card.dart';
+// Keep the shared app compatible with the current native Flutter SDK.
+// ignore: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -29,6 +31,8 @@ class _FakeAuthRepository implements AuthRepository {
   Future<void> signInWithApple() async {}
   @override
   Future<void> signOut() async {}
+  @override
+  Future<void> completeWebSignIn(Uri uri) async {}
 }
 
 /// Recipe repo whose fetches complete only when we say so — no timers, so the
@@ -66,12 +70,15 @@ class _ControlledRecipeRepository implements RecipeRepository {
   Future<void> deleteAccount() async {}
 }
 
-AuthSession _session(String email) =>
-    AuthSession(token: 't-$email', email: email, userInitial: 'X');
+AuthSession _session(String email) => AuthSession(
+  userId: email,
+  token: 't-$email',
+  email: email,
+  userInitial: 'X',
+);
 
 void main() {
-  testWidgets(
-      'recipe cards stay visible during a background reload '
+  testWidgets('recipe cards stay visible during a background reload '
       '(no "count says N but list is a spinner" mismatch)', (tester) async {
     tester.view.physicalSize = const Size(1200, 3600);
     tester.view.devicePixelRatio = 3.0;
@@ -99,7 +106,14 @@ void main() {
 
     // Trigger a reload while data already exists (mirrors a token refresh /
     // auth-state change re-running the provider). Leave the fetch un-resolved.
-    auth.emit(_session('b@example.com'));
+    auth.emit(
+      const AuthSession(
+        userId: 'a@example.com',
+        token: 'refreshed',
+        email: 'a@example.com',
+        userInitial: 'X',
+      ),
+    );
     await tester.pump();
 
     // The reported bug: the count still reads four, but the list dropped to a

@@ -1,3 +1,5 @@
+// Keep the shared app compatible with the current native Flutter SDK.
+// ignore: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

@@ -21,7 +21,9 @@ class AppColors {
   static const brandGreen = Color(0xFF2D6A4F); // hero, primary buttons, checks
 
   // Cookbook screen redesign (sage "save island" + search pill).
-  static const brandSageDark = Color(0xFF1F4D38); // inset Save button, deep sage
+  static const brandSageDark = Color(
+    0xFF1F4D38,
+  ); // inset Save button, deep sage
   static const searchFill = Color(0xFFE6EEE4); // filled search pill
   static const sageMuted = Color(0xFF7A8B78); // cookbook count, search icon
   static const sagePlaceholder = Color(0xFF8A9588); // search placeholder text
@@ -30,7 +32,9 @@ class AppColors {
   // Parchment "cookbook" save island (v2).
   static const surfaceParchment = Color(0xFFF5EBD0); // island background
   static const borderParchment = Color(0xFFE5D6AF); // input container border
-  static const borderParchmentStrong = Color(0xFFDBC582); // island edge (deeper)
+  static const borderParchmentStrong = Color(
+    0xFFDBC582,
+  ); // island edge (deeper)
   static const parchmentHeading = Color(0xFF3D2E15); // "Save a recipe"
   static const parchmentSub = Color(0xFF8A7548); // subheading
   static const parchmentPlaceholder = Color(0xFFB8A87A); // url placeholder
@@ -40,8 +44,12 @@ class AppColors {
   static const danger = Color(0xFFC0392B); // destructive actions (log out)
 
   static const textPrimary = Color(0xFF2A2520);
-  static const textSecondary = Color(0xFF57514A); // darker warm gray, more legible
-  static const textTertiary = Color(0xFF8A857D); // darker tertiary for labels/meta
+  static const textSecondary = Color(
+    0xFF57514A,
+  ); // darker warm gray, more legible
+  static const textTertiary = Color(
+    0xFF8A857D,
+  ); // darker tertiary for labels/meta
   static const textInputPlaceholder = Color(0xFFA8A8A8);
 
   static const divider = Color(0xFFE8E6E1);
@@ -239,46 +247,46 @@ class AppText {
 
   // ── Sans roles ─────────────────────────────────────────────
   static TextStyle hero({Color color = AppColors.onGreen}) => _sans(
-        size: 46,
-        weight: FontWeight.w700,
-        height: 0.98,
-        letterSpacing: tracking(-0.035, 46),
-        color: color,
-      );
+    size: 46,
+    weight: FontWeight.w700,
+    height: 0.98,
+    letterSpacing: tracking(-0.035, 46),
+    color: color,
+  );
 
   static TextStyle signInTitle() => _sans(
-        size: 32,
-        weight: FontWeight.w700,
-        height: 1.0,
-        letterSpacing: tracking(-0.025, 32),
-      );
+    size: 32,
+    weight: FontWeight.w700,
+    height: 1.0,
+    letterSpacing: tracking(-0.025, 32),
+  );
 
   static TextStyle recipeTitle() => _sans(
-        size: 38,
-        weight: FontWeight.w700,
-        height: 1.0,
-        letterSpacing: tracking(-0.03, 38),
-      );
+    size: 38,
+    weight: FontWeight.w700,
+    height: 1.0,
+    letterSpacing: tracking(-0.03, 38),
+  );
 
   static TextStyle pageTitle() => _sans(
-        size: 32,
-        weight: FontWeight.w700,
-        letterSpacing: tracking(-0.025, 32),
-      );
+    size: 32,
+    weight: FontWeight.w700,
+    letterSpacing: tracking(-0.025, 32),
+  );
 
   static TextStyle sectionHeader() => _sans(
-        size: 18,
-        weight: FontWeight.w700,
-        letterSpacing: tracking(-0.015, 18),
-        color: AppColors.brandGreen,
-      );
+    size: 18,
+    weight: FontWeight.w700,
+    letterSpacing: tracking(-0.015, 18),
+    color: AppColors.brandGreen,
+  );
 
   static TextStyle cardTitle() => _sans(
-        size: 18,
-        weight: FontWeight.w700,
-        height: 1.25,
-        letterSpacing: tracking(-0.015, 18),
-      );
+    size: 18,
+    weight: FontWeight.w700,
+    height: 1.25,
+    letterSpacing: tracking(-0.015, 18),
+  );
 
   static TextStyle methodBody() =>
       _sans(size: 15, weight: FontWeight.w500, height: 1.55);
@@ -290,12 +298,12 @@ class AppText {
       _sans(size: 15, weight: FontWeight.w500, height: 1.4);
 
   static TextStyle cardDescription() => _sans(
-        size: 13,
-        weight: FontWeight.w500,
-        height: 1.45,
-        letterSpacing: tracking(-0.005, 13),
-        color: AppColors.textSecondary,
-      );
+    size: 13,
+    weight: FontWeight.w500,
+    height: 1.45,
+    letterSpacing: tracking(-0.005, 13),
+    color: AppColors.textSecondary,
+  );
 
   static TextStyle notesItem() =>
       _sans(size: 13, weight: FontWeight.w500, height: 1.55);
@@ -303,75 +311,62 @@ class AppText {
   static TextStyle statValue() => _sans(size: 18, weight: FontWeight.w600);
 
   static TextStyle statLabel() => _sans(
-        size: 11,
-        weight: FontWeight.w700,
-        letterSpacing: tracking(0.08, 11),
-        color: AppColors.textSecondary,
-      );
+    size: 11,
+    weight: FontWeight.w700,
+    letterSpacing: tracking(0.08, 11),
+    color: AppColors.textSecondary,
+  );
 
   static TextStyle heroParagraph() => _sans(
-        size: 16,
-        weight: FontWeight.w400,
-        height: 1.5,
-        color: const Color(0xB3FAFAF8), // rgba(250,250,248,0.7)
-      );
+    size: 16,
+    weight: FontWeight.w400,
+    height: 1.5,
+    color: const Color(0xB3FAFAF8), // rgba(250,250,248,0.7)
+  );
 
   /// Library section label ("NEW RECIPE", "YOUR RECIPES") — bolder + darker
   /// than [eyebrow] so sections read clearly.
   static TextStyle sectionLabel({Color color = AppColors.textPrimary}) => _sans(
-        size: 13,
-        weight: FontWeight.w700,
-        letterSpacing: tracking(0.06, 13),
-        color: color,
-      );
+    size: 13,
+    weight: FontWeight.w700,
+    letterSpacing: tracking(0.06, 13),
+    color: color,
+  );
 
   /// "SAVING RECIPE" / "YOUR LIBRARY" eyebrow.
   static TextStyle eyebrow({
     Color color = AppColors.textTertiary,
     FontWeight weight = FontWeight.w500,
-  }) =>
-      _sans(
-        size: 11,
-        weight: weight,
-        letterSpacing: tracking(0.12, 11),
-        color: color,
-      );
+  }) => _sans(
+    size: 11,
+    weight: weight,
+    letterSpacing: tracking(0.12, 11),
+    color: color,
+  );
 
   static TextStyle urlPlaceholder() => _sans(
-        size: 14,
-        weight: FontWeight.w400,
-        color: AppColors.textInputPlaceholder,
-      );
+    size: 14,
+    weight: FontWeight.w400,
+    color: AppColors.textInputPlaceholder,
+  );
 
   // ── Mono roles ─────────────────────────────────────────────
   static TextStyle sourceEyebrow() => _mono(
-        size: 10,
-        weight: FontWeight.w500,
-        letterSpacing: tracking(0.08, 10),
-        color: AppColors.accentOrange,
-      );
+    size: 10,
+    weight: FontWeight.w500,
+    letterSpacing: tracking(0.08, 10),
+    color: AppColors.accentOrange,
+  );
 
-  static TextStyle stepNumber() => _mono(
-        size: 13,
-        weight: FontWeight.w600,
-        color: AppColors.accentOrange,
-      );
+  static TextStyle stepNumber() =>
+      _mono(size: 13, weight: FontWeight.w600, color: AppColors.accentOrange);
 
-  static TextStyle metaMono() => _mono(
-        size: 11,
-        weight: FontWeight.w400,
-        color: AppColors.textTertiary,
-      );
+  static TextStyle metaMono() =>
+      _mono(size: 11, weight: FontWeight.w400, color: AppColors.textTertiary);
 
-  static TextStyle notesArrow() => _mono(
-        size: 12,
-        weight: FontWeight.w400,
-        color: AppColors.accentOrange,
-      );
+  static TextStyle notesArrow() =>
+      _mono(size: 12, weight: FontWeight.w400, color: AppColors.accentOrange);
 
-  static TextStyle pastedUrl() => _mono(
-        size: 11,
-        weight: FontWeight.w400,
-        color: AppColors.textPrimary,
-      );
+  /// Keep URL text unchanged when an editable field enters its saving state.
+  static TextStyle pastedUrl() => body();
 }

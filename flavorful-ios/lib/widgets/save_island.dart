@@ -1,5 +1,8 @@
+import 'app_action.dart';
 import 'dart:math' as math;
 
+// Keep the shared app compatible with the current native Flutter SDK.
+// ignore: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -192,7 +195,7 @@ class _SaveIslandState extends State<SaveIsland> {
                           widget.pastedUrl ?? widget.controller.text,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: AppText.pastedUrl().copyWith(fontSize: 13),
+                          style: AppText.pastedUrl(),
                         ),
                       )
                     : TextField(
@@ -220,10 +223,7 @@ class _SaveIslandState extends State<SaveIsland> {
                       ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(4),
-              child: _saveButton(),
-            ),
+            Padding(padding: const EdgeInsets.all(4), child: _saveButton()),
           ],
         ),
       ),
@@ -231,8 +231,8 @@ class _SaveIslandState extends State<SaveIsland> {
   }
 
   Widget _saveButton() {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
+    return AppAction(
+      label: _isSaving ? 'Saving recipe' : 'Save recipe',
       onTap: _isSaving ? null : widget.onSave,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -291,8 +291,7 @@ class _SaveIslandState extends State<SaveIsland> {
             ),
           ),
           const SizedBox(width: 12),
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
+          AppAction(
             onTap: widget.onRetry,
             child: Text(
               'Try again',

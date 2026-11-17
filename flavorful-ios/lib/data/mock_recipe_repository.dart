@@ -63,7 +63,7 @@ class MockRecipeRepository implements RecipeRepository {
       url: trimmed,
       hostname: hostnameFromUrl(trimmed),
       title: _titleFromUrl(trimmed),
-      description: 'Saved from ${hostnameFromUrl(trimmed)}.',
+      description: 'Sample recipe for ${hostnameFromUrl(trimmed)}.',
       totalMinutes: 40,
       servings: 4,
       difficulty: 'Easy',
@@ -81,7 +81,7 @@ class MockRecipeRepository implements RecipeRepository {
       ],
       method: const [
         'Open the saved page to read the full instructions.',
-        'This recipe was scraped from the URL you pasted.',
+        'This is sample data. The offline demo does not read recipe pages.',
       ],
       notesFromPage: const [],
     );

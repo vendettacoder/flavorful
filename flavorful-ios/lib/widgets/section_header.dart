@@ -15,16 +15,17 @@ class SectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.only(bottom: 10),
       decoration: const BoxDecoration(
         border: Border(
           bottom: BorderSide(color: AppColors.brandGreen, width: 2),
         ),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.baseline,
-        textBaseline: TextBaseline.alphabetic,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Wrap(
+        alignment: WrapAlignment.spaceBetween,
+        spacing: 12,
+        runSpacing: 4,
         children: [
           Text(title, style: AppText.sectionHeader()),
           if (meta != null) Text(meta!, style: AppText.metaMono()),

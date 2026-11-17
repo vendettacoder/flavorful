@@ -1,9 +1,13 @@
+// Keep the shared app compatible with the current native Flutter SDK.
+// ignore: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../models/recipe.dart';
+import '../widgets/app_action.dart';
 import '../providers/providers.dart';
 import '../theme/tokens.dart';
 import '../widgets/app_icons.dart';
@@ -16,11 +20,7 @@ import '../widgets/ingredient_checkbox.dart';
 /// original page. Servings and checkoff are per-cook session state — they reset
 /// each time the screen opens.
 class RecipeDetailScreen extends ConsumerStatefulWidget {
-  const RecipeDetailScreen({
-    super.key,
-    required this.recipeId,
-    this.summary,
-  });
+  const RecipeDetailScreen({super.key, required this.recipeId, this.summary});
 
   final String recipeId;
 
@@ -47,91 +47,121 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
         backgroundColor: AppColors.bgPage,
         body: SafeArea(
           bottom: false,
-          child: recipeAsync.when(
-            loading: _loadingView,
-            error: (e, _) => _errorView(),
-            data: _dataView,
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1100),
+              child: recipeAsync.when(
+                skipLoadingOnReload: false,
+                skipLoadingOnRefresh: false,
+                loading: _loadingView,
+                error: (e, _) => _errorView(),
+                data: _dataView,
+              ),
+            ),
           ),
         ),
       ),
     );
   }
 
-  bool get _liveIsFavorited {
+  bool? get _liveIsFavorited {
     final inList = ref
         .watch(recipesProvider)
         .valueOrNull
         ?.where((r) => r.id == widget.recipeId)
         .firstOrNull;
-    return inList?.isFavorited ?? widget.summary?.isFavorited ?? false;
+    return inList?.isFavorited ?? widget.summary?.isFavorited;
   }
 
   Widget _loadingView() => Column(
-        children: [
-          _TopBar(
-            onBack: () => Navigator.of(context).pop(),
-            onDelete: null,
-          ),
-          const Expanded(
-            child: Center(
-              child: CircularProgressIndicator(color: AppColors.brandGreen),
-            ),
-          ),
-        ],
-      );
+    children: [
+      _TopBar(onBack: () => context.go('/'), onDelete: null),
+      const Expanded(
+        child: Center(
+          child: CircularProgressIndicator(color: AppColors.brandGreen),
+        ),
+      ),
+    ],
+  );
 
   Widget _errorView() => Column(
-        children: [
-          _TopBar(
-            onBack: () => Navigator.of(context).pop(),
-            onDelete: null,
-          ),
-          Expanded(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.edge),
-                child: Text(
-                  'Could not load this recipe.',
-                  style: AppText.body().copyWith(color: AppColors.textSecondary),
+    children: [
+      _TopBar(onBack: () => context.go('/'), onDelete: null),
+      Expanded(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.edge),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Could not load this recipe.', style: AppText.body()),
+                TextButton(
+                  onPressed: () =>
+                      ref.invalidate(recipeDetailProvider(widget.recipeId)),
+                  child: const Text('Try again'),
                 ),
-              ),
+              ],
             ),
           ),
-        ],
-      );
+        ),
+      ),
+    ],
+  );
 
   Widget _dataView(Recipe recipe) {
     final servings = _servings ?? recipe.servings;
     // Prefer: (1) local toggle override, (2) live recipesProvider (always
     // fresh after setFavorite/refresh), (3) fetched recipe as fallback.
-    final isFavorited = _favOverride ?? _liveIsFavorited;
+    final isFavorited = _favOverride ?? _liveIsFavorited ?? recipe.isFavorited;
     final factor = recipe.servings == 0 ? 1.0 : servings / recipe.servings;
 
     return Column(
       children: [
         _TopBar(
-          onBack: () => Navigator.of(context).pop(),
+          onBack: () => context.go('/'),
           onDelete: () => _confirmDelete(recipe),
+          isFavorited: isFavorited,
+          onFavorite: () => _toggleFavorite(recipe, isFavorited),
         ),
         Expanded(
           child: SingleChildScrollView(
             // Bottom inset for the home indicator now lives here, so whichever
             // section is last (notes or nutrition) clears it.
             padding: const EdgeInsets.only(bottom: AppSpacing.homeIndicator),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _titleBlock(
-                  recipe,
-                  isFavorited: isFavorited,
-                  onFavorite: () => _toggleFavorite(recipe, isFavorited),
-                ),
-                _statsRow(recipe, servings),
-                _ingredients(recipe, factor),
-                _method(recipe),
-                if (recipe.notesFromPage.isNotEmpty) _notes(recipe),
-                if (recipe.nutrition.isNotEmpty) _nutrition(recipe),
-              ],
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final wide = constraints.maxWidth >= 850;
+                final method = Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _method(recipe, topPadding: wide ? 32 : 24),
+                    if (recipe.notesFromPage.isNotEmpty) _notes(recipe),
+                  ],
+                );
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _titleBlock(recipe),
+                    _statsRow(recipe, servings),
+                    if (wide)
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            flex: 4,
+                            child: _ingredients(recipe, factor),
+                          ),
+                          Expanded(flex: 6, child: method),
+                        ],
+                      )
+                    else ...[
+                      _ingredients(recipe, factor),
+                      method,
+                    ],
+                    if (recipe.nutrition.isNotEmpty) _nutrition(recipe),
+                  ],
+                );
+              },
             ),
           ),
         ),
@@ -139,50 +169,51 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
     );
   }
 
-  Widget _titleBlock(
-    Recipe recipe, {
-    required bool isFavorited,
-    required VoidCallback onFavorite,
-  }) {
+  Widget _titleBlock(Recipe recipe) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(AppSpacing.edge, 24, AppSpacing.edge, 0),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.edge,
+        24,
+        AppSpacing.edge,
+        0,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(recipe.hostname.toUpperCase(), style: AppText.sourceEyebrow()),
           const SizedBox(height: 10),
-          // Title + a fixed favorite button to its right.
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Text(recipe.title, style: AppText.recipeTitle()),
-              ),
-              const SizedBox(width: 12),
-              _FavoriteButton(isFavorited: isFavorited, onTap: onFavorite),
-            ],
+          Text(
+            recipe.title,
+            key: const ValueKey('recipe-title'),
+            style: AppText.recipeTitle(),
           ),
           if (recipe.description.isNotEmpty) ...[
             const SizedBox(height: 12),
-            Text(recipe.description, style: AppText.body()
-                .copyWith(color: AppColors.textSecondary)),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 680),
+              child: Text(
+                recipe.description,
+                style: AppText.body().copyWith(color: AppColors.textSecondary),
+              ),
+            ),
           ],
           const SizedBox(height: 14),
           // Subtle source link (replaces the prominent top CTA).
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
+          AppAction(
             onTap: () => _openOriginal(recipe.url),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 AppIcons.externalLink(size: 12, color: AppColors.textSecondary),
                 const SizedBox(width: 6),
-                Text(
-                  'View on ${recipe.hostname}',
-                  style: AppText.body().copyWith(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.textSecondary,
+                Flexible(
+                  child: Text(
+                    'View on ${recipe.hostname}',
+                    style: AppText.body().copyWith(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ),
               ],
@@ -195,14 +226,22 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
 
   Widget _statsRow(Recipe recipe, int servings) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(AppSpacing.edge, 20, AppSpacing.edge, 0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.edge,
+        20,
+        AppSpacing.edge,
+        0,
+      ),
+      child: Wrap(
+        spacing: 24,
+        runSpacing: 16,
+        crossAxisAlignment: WrapCrossAlignment.end,
         children: [
           if (recipe.totalMinutes > 0) ...[
-            _stat('TIME',
-                Text('${recipe.totalMinutes} min', style: AppText.statValue())),
-            const SizedBox(width: 24),
+            _stat(
+              'TIME',
+              Text('${recipe.totalMinutes} min', style: AppText.statValue()),
+            ),
           ],
           // Only show the servings stepper when the source actually specified
           // a servings count — otherwise it's a meaningless "1" to scale from.
@@ -216,9 +255,10 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
             ),
           ],
           if (recipe.difficulty != null) ...[
-            const SizedBox(width: 24),
-            _stat('DIFFICULTY',
-                Text(recipe.difficulty!, style: AppText.statValue())),
+            _stat(
+              'DIFFICULTY',
+              Text(recipe.difficulty!, style: AppText.statValue()),
+            ),
           ],
         ],
       ),
@@ -239,7 +279,12 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
 
   Widget _ingredients(Recipe recipe, double factor) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(AppSpacing.edge, 32, AppSpacing.edge, 0),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.edge,
+        32,
+        AppSpacing.edge,
+        0,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -247,7 +292,7 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
             title: 'Ingredients',
             meta: recipe.servingsKnown
                 ? '${recipe.ingredients.length} · serves '
-                    '${_servings ?? recipe.servings}'
+                      '${_servings ?? recipe.servings}'
                 : '${recipe.ingredients.length} ingredients',
           ),
           const SizedBox(height: 6),
@@ -270,16 +315,18 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
     );
   }
 
-  Widget _method(Recipe recipe) {
+  Widget _method(Recipe recipe, {double topPadding = 24}) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(AppSpacing.edge, 24, AppSpacing.edge, 0),
+      padding: EdgeInsets.fromLTRB(
+        AppSpacing.edge,
+        topPadding,
+        AppSpacing.edge,
+        0,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SectionHeader(
-            title: 'Method',
-            meta: '${recipe.method.length} steps',
-          ),
+          SectionHeader(title: 'Method', meta: '${recipe.method.length} steps'),
           const SizedBox(height: 18),
           for (var i = 0; i < recipe.method.length; i++) ...[
             if (i > 0) const SizedBox(height: 18),
@@ -295,7 +342,12 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
 
   Widget _notes(Recipe recipe) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(AppSpacing.edge, 24, AppSpacing.edge, 0),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.edge,
+        24,
+        AppSpacing.edge,
+        0,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -313,7 +365,12 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
   Widget _nutrition(Recipe recipe) {
     final entries = recipe.nutrition.entries.toList();
     return Padding(
-      padding: const EdgeInsets.fromLTRB(AppSpacing.edge, 24, AppSpacing.edge, 0),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.edge,
+        24,
+        AppSpacing.edge,
+        0,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -321,18 +378,30 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
           const SizedBox(height: 12),
           for (var i = 0; i < entries.length; i++) ...[
             if (i > 0)
-              const Divider(height: 1, thickness: 1, color: AppColors.dividerSoft),
+              const Divider(
+                height: 1,
+                thickness: 1,
+                color: AppColors.dividerSoft,
+              ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(entries[i].key, style: AppText.ingredient()),
-                  Text(entries[i].value,
+                  Expanded(
+                    child: Text(entries[i].key, style: AppText.ingredient()),
+                  ),
+                  const SizedBox(width: 12),
+                  Flexible(
+                    child: Text(
+                      entries[i].value,
+                      textAlign: TextAlign.right,
                       style: AppText.ingredient().copyWith(
                         fontWeight: FontWeight.w600,
                         color: AppColors.textSecondary,
-                      )),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -346,15 +415,22 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
     final next = !current;
     // Optimistic update for instant star feedback.
     setState(() => _favOverride = next);
-    ref.read(recipesProvider.notifier).setFavorite(recipe.id, next);
     try {
-      await ref.read(recipeRepositoryProvider).toggleFavorite(recipe.id);
-      // Re-fetch so the library re-orders (favorites first) immediately.
-      ref.read(recipesProvider.notifier).refresh();
+      final confirmed = await ref
+          .read(recipesProvider.notifier)
+          .toggleFavorite(recipe.copyWith(isFavorited: current));
+      if (!mounted || confirmed == null) return;
+      final inList =
+          ref
+              .read(recipesProvider)
+              .valueOrNull
+              ?.any((item) => item.id == recipe.id) ??
+          false;
+      // Prefer the refreshed list. Keep the confirmed value if no list loaded.
+      setState(() => _favOverride = inList ? null : confirmed);
     } catch (_) {
-      // Roll back on failure.
       if (mounted) setState(() => _favOverride = current);
-      ref.read(recipesProvider.notifier).setFavorite(recipe.id, current);
+      // The shared notifier also restores the cookbook after navigation.
     }
   }
 
@@ -371,16 +447,29 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            style: TextButton.styleFrom(foregroundColor: AppColors.accentOrange),
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.accentOrange,
+            ),
             child: const Text('Delete'),
           ),
         ],
       ),
     );
     if (confirmed != true) return;
-    await ref.read(recipeRepositoryProvider).deleteRecipe(recipe.id);
-    ref.read(recipesProvider.notifier).removeLocally(recipe.id);
-    if (mounted) Navigator.of(context).pop();
+    if (!mounted) return;
+    try {
+      final deleted = await ref
+          .read(recipesProvider.notifier)
+          .deleteRecipe(recipe.id);
+      if (mounted && deleted) context.go('/');
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Could not delete this recipe. Please try again.'),
+        ),
+      );
+    }
   }
 
   Future<void> _openOriginal(String url) async {
@@ -394,25 +483,30 @@ class _TopBar extends StatelessWidget {
   const _TopBar({
     required this.onBack,
     required this.onDelete,
+    this.isFavorited = false,
+    this.onFavorite,
   });
 
   final VoidCallback onBack;
   final VoidCallback? onDelete;
+  final bool isFavorited;
+  final VoidCallback? onFavorite;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      // Match content edge (20) so the delete icon lines up vertically with the
-      // favorite star in the title block below.
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.edge, vertical: 14),
+      // Keep recipe actions separate from the title and reading area.
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.edge,
+        vertical: 14,
+      ),
       decoration: const BoxDecoration(
         border: Border(bottom: BorderSide(color: AppColors.dividerSoft)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
+          AppAction(
             onTap: onBack,
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -420,7 +514,7 @@ class _TopBar extends StatelessWidget {
                 AppIcons.chevronBack(size: 18, color: AppColors.accentOrange),
                 const SizedBox(width: 6),
                 Text(
-                  'Library',
+                  'Cookbook',
                   style: AppText.body().copyWith(
                     fontSize: 15,
                     fontWeight: FontWeight.w500,
@@ -430,14 +524,29 @@ class _TopBar extends StatelessWidget {
               ],
             ),
           ),
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: onDelete,
-            child: const Icon(
-              Icons.delete_outline_rounded,
-              size: 24,
-              color: AppColors.textSecondary,
-            ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (onFavorite != null) ...[
+                _FavoriteButton(isFavorited: isFavorited, onTap: onFavorite!),
+                const SizedBox(width: 12),
+              ],
+              AppAction(
+                label: 'Delete recipe',
+                onTap: onDelete,
+                child: const SizedBox(
+                  width: 44,
+                  height: 44,
+                  child: Center(
+                    child: Icon(
+                      Icons.delete_outline_rounded,
+                      size: 24,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -445,8 +554,7 @@ class _TopBar extends StatelessWidget {
   }
 }
 
-/// Bare favorite star shown beside the recipe title — same 24px footprint as
-/// the top-bar delete icon so the two line up vertically.
+/// Favorite action in the top bar, with a 44px click target.
 class _FavoriteButton extends StatelessWidget {
   const _FavoriteButton({required this.isFavorited, required this.onTap});
   final bool isFavorited;
@@ -454,12 +562,12 @@ class _FavoriteButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
+    return AppAction(
+      label: isFavorited ? 'Remove favorite' : 'Add favorite',
       onTap: onTap,
       child: SizedBox(
-        width: 24,
-        height: 24,
+        width: 44,
+        height: 44,
         child: Center(child: AppIcons.star(size: 24, filled: isFavorited)),
       ),
     );
@@ -518,8 +626,8 @@ class _IngredientRow extends StatelessWidget {
       style: baseStyle,
     );
 
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
+    return AppAction(
+      checked: checked,
       onTap: () => onToggle(!checked), // tapping anywhere on the row toggles
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10),
@@ -533,7 +641,16 @@ class _IngredientRow extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.only(top: 1),
-              child: IngredientCheckbox(checked: checked, onChanged: onToggle),
+              child: ExcludeFocus(
+                child: ExcludeSemantics(
+                  child: IgnorePointer(
+                    child: IngredientCheckbox(
+                      checked: checked,
+                      onChanged: onToggle,
+                    ),
+                  ),
+                ),
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(

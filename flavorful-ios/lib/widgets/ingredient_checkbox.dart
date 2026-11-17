@@ -1,3 +1,4 @@
+import 'app_action.dart';
 import 'package:flutter/widgets.dart';
 
 import '../theme/tokens.dart';
@@ -16,8 +17,9 @@ class IngredientCheckbox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
+    return AppAction(
+      checked: checked,
+      label: 'Check ingredient',
       onTap: () => onChanged(!checked),
       child: Container(
         width: 18,

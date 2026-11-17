@@ -1,3 +1,7 @@
+import 'package:flutter/foundation.dart';
+
+// Keep the shared app compatible with the current native Flutter SDK.
+// ignore: deprecated_member_use
 import 'package:flutter/material.dart';
 
 import '../theme/tokens.dart';
@@ -53,6 +57,12 @@ class AccountAvatar extends StatelessWidget {
         width: size,
         height: size,
         fit: BoxFit.cover,
+        semanticLabel: 'Profile photo',
+        // Google photos may not allow the byte requests used by the canvas.
+        // A normal browser image can display them without reading their pixels.
+        webHtmlElementStrategy: kIsWeb
+            ? WebHtmlElementStrategy.prefer
+            : WebHtmlElementStrategy.never,
         errorBuilder: (_, _, _) => fallback,
         loadingBuilder: (ctx, child, progress) =>
             progress == null ? child : fallback,

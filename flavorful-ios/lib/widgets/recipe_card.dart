@@ -1,3 +1,6 @@
+import 'app_action.dart';
+// Keep the shared app compatible with the current native Flutter SDK.
+// ignore: deprecated_member_use
 import 'package:flutter/material.dart';
 
 import '../models/recipe.dart';
@@ -22,8 +25,15 @@ class RecipeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
+    final titleStyle = AppText.cardTitle();
+    final descriptionStyle = AppText.cardDescription();
+    final metaStyle = AppText.metaMono();
+    final textScaler = MediaQuery.textScalerOf(context);
+    double textHeight(TextStyle style, int lines) =>
+        textScaler.scale(style.fontSize!) * (style.height ?? 1.4) * lines;
+
+    return AppAction(
+      label: 'Open ${recipe.title}',
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
@@ -38,47 +48,82 @@ class RecipeCard extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SourceEyebrow(recipe.hostname),
+                Padding(
+                  padding: const EdgeInsets.only(right: 26),
+                  child: SourceEyebrow(recipe.hostname),
+                ),
                 Padding(
                   // Always reserve space for the star so title doesn't jump.
                   padding: const EdgeInsets.only(top: 8, right: 24),
-                  child: Text(recipe.title, style: AppText.cardTitle()),
-                ),
-                if (recipe.description.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 6),
+                  child: SizedBox(
+                    height: textHeight(titleStyle, 2),
                     child: Text(
-                      recipe.description,
-                      style: AppText.cardDescription(),
+                      recipe.title,
+                      style: titleStyle,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                if (recipe.totalMinutes > 0 || recipe.calories != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 12),
+                ),
+                // Reserve the same space even when a description is absent.
+                // The detail page still shows the full title and description.
+                Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: SizedBox(
+                    height: textHeight(descriptionStyle, 3),
+                    child: Text(
+                      recipe.description,
+                      style: descriptionStyle,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: SizedBox(
+                    height: textHeight(metaStyle, 1).clamp(18, double.infinity),
                     child: Row(
                       children: [
                         if (recipe.totalMinutes > 0)
-                          Text('${recipe.totalMinutes} min',
-                              style: AppText.metaMono()),
+                          Flexible(
+                            child: Text(
+                              '${recipe.totalMinutes} min',
+                              style: metaStyle,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
                         if (recipe.totalMinutes > 0 && recipe.calories != null)
                           const SizedBox(width: 12),
                         if (recipe.calories != null) ...[
-                          const Icon(Icons.local_fire_department_outlined,
-                              size: 14, color: AppColors.textTertiary),
+                          const Icon(
+                            Icons.local_fire_department_outlined,
+                            size: 14,
+                            color: AppColors.textTertiary,
+                          ),
                           const SizedBox(width: 3),
-                          Text(recipe.calories!, style: AppText.metaMono()),
+                          Flexible(
+                            child: Text(
+                              recipe.calories!,
+                              style: metaStyle,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
                         ],
                       ],
                     ),
                   ),
+                ),
               ],
             ),
             Positioned(
               top: 0,
               right: 0,
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
+              child: AppAction(
                 // Stop tap propagating to the card's onTap.
+                label: recipe.isFavorited ? 'Remove favorite' : 'Add favorite',
                 onTap: onToggleFavorite,
                 child: Padding(
                   padding: const EdgeInsets.all(2),

@@ -1,6 +1,9 @@
+// Keep the shared app compatible with the current native Flutter SDK.
+// ignore: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../models/recipe.dart';
 import '../providers/providers.dart';
@@ -11,7 +14,7 @@ import '../widgets/app_icons.dart';
 import '../widgets/recipe_card.dart';
 import '../widgets/save_island.dart';
 import '../widgets/wordmark.dart';
-import 'recipe_detail_screen.dart';
+import '../widgets/app_action.dart';
 
 /// Browse saved recipes and add new ones by pasting a URL.
 class LibraryScreen extends ConsumerStatefulWidget {
@@ -26,34 +29,14 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
-  // Drives the collapse of the "New recipe" section as the list scrolls.
-  // 0 = fully expanded (at top), 1 = fully collapsed. Re-expands gradually on
-  // scroll-up. Kept in a ValueNotifier so only the section rebuilds per frame,
-  // not the whole screen.
   final ScrollController _scrollController = ScrollController();
-  final ValueNotifier<double> _collapse = ValueNotifier<double>(0);
-  static const double _collapseDistance = 110; // px of scroll to fully collapse
-
-  void _onScroll() {
-    if (!_scrollController.hasClients) return;
-    _collapse.value =
-        (_scrollController.offset / _collapseDistance).clamp(0.0, 1.0);
-  }
-
   void _onSearchChanged(String value) {
     setState(() => _searchQuery = value.trim().toLowerCase());
   }
 
   @override
-  void initState() {
-    super.initState();
-    _scrollController.addListener(_onScroll);
-  }
-
-  @override
   void dispose() {
     _scrollController.dispose();
-    _collapse.dispose();
     _urlController.dispose();
     _searchController.dispose();
     super.dispose();
@@ -66,15 +49,10 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
   }
 
   Future<void> _toggleFavorite(Recipe recipe) async {
-    final current = recipe.isFavorited;
-    final next = !current;
-    // Optimistic update + backend call + refresh (same as detail screen).
-    ref.read(recipesProvider.notifier).setFavorite(recipe.id, next);
     try {
-      await ref.read(recipeRepositoryProvider).toggleFavorite(recipe.id);
-      ref.read(recipesProvider.notifier).refresh();
+      await ref.read(recipesProvider.notifier).toggleFavorite(recipe);
     } catch (_) {
-      ref.read(recipesProvider.notifier).setFavorite(recipe.id, current);
+      // The shared notifier restores the favorite, even after navigation.
     }
   }
 
@@ -82,9 +60,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
   Widget build(BuildContext context) {
     // Clear the field once a save completes successfully.
     ref.listen<AddRecipeState>(addRecipeProvider, (prev, next) {
-      // Clear the field once a save finishes — success OR failure.
-      if (prev?.status == AddStatus.saving &&
-          (next.status == AddStatus.idle || next.status == AddStatus.error)) {
+      if (prev?.status == AddStatus.saving && next.status == AddStatus.idle) {
         _urlController.clear();
       }
       // Green confirmation when a recipe saves (saving → idle = success).
@@ -110,141 +86,222 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
     final initial = session?.userInitial ?? '?';
     final avatarUrl = session?.avatarUrl;
 
+    final recipes = recipesAsync.valueOrNull;
+    final filtered =
+        (recipes ?? <Recipe>[])
+            .where(
+              (r) =>
+                  _searchQuery.isEmpty ||
+                  r.title.toLowerCase().contains(_searchQuery) ||
+                  r.hostname.toLowerCase().contains(_searchQuery) ||
+                  r.description.toLowerCase().contains(_searchQuery),
+            )
+            .toList()
+          ..sort((a, b) {
+            if (a.isFavorited != b.isFavorited) return a.isFavorited ? -1 : 1;
+            return b.savedAt.compareTo(a.savedAt);
+          });
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.dark,
       child: Scaffold(
-        backgroundColor: AppColors.bgPage,
         body: SafeArea(
           bottom: false,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _TopBar(
-                initial: initial,
-                avatarUrl: avatarUrl,
-                onAvatarTap: () => ProfileSheet.show(context),
-              ),
-              // ── Save island (collapses as the list scrolls down) ──
-              ValueListenableBuilder<double>(
-                valueListenable: _collapse,
-                builder: (context, collapse, child) {
-                  final factor = 1 - collapse; // 1 expanded → 0 collapsed
-                  return ClipRect(
-                    child: Align(
-                      alignment: Alignment.topCenter,
-                      heightFactor: factor,
-                      child: Opacity(opacity: factor, child: child),
-                    ),
-                  );
-                },
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.edge, 24, AppSpacing.edge, 0),
-                  child: SaveIsland(
-                    controller: _urlController,
-                    status: addState.status,
-                    pastedUrl: addState.pastedUrl,
-                    errorMessage: addState.errorMessage,
-                    onSubmitted: _submit,
-                    onRetry: () =>
-                        _submit(addState.pastedUrl ?? _urlController.text),
-                    onSave: () => _submit(_urlController.text),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1180),
+              child: Column(
+                children: [
+                  _TopBar(
+                    initial: initial,
+                    avatarUrl: avatarUrl,
+                    onAvatarTap: () => ProfileSheet.show(context),
                   ),
-                ),
-              ),
-              // ── Cookbook header: title + count, no eyebrow ──
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.edge, 32, AppSpacing.edge, 0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Cookbook',
-                      style: TextStyle(
-                        fontFamily: AppFonts.sans,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: AppText.tracking(-0.025, 22),
-                        color: AppColors.textPrimary,
-                      ),
+                  Expanded(
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final columns = constraints.maxWidth >= 1100
+                            ? 3
+                            : constraints.maxWidth >= 700
+                            ? 2
+                            : 1;
+                        return RefreshIndicator(
+                          color: AppColors.brandGreen,
+                          onRefresh: () =>
+                              ref.read(recipesProvider.notifier).refresh(),
+                          child: CustomScrollView(
+                            controller: _scrollController,
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            slivers: [
+                              SliverToBoxAdapter(
+                                child: Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                    AppSpacing.edge,
+                                    24,
+                                    AppSpacing.edge,
+                                    0,
+                                  ),
+                                  child: SaveIsland(
+                                    controller: _urlController,
+                                    status: addState.status,
+                                    pastedUrl: addState.pastedUrl,
+                                    errorMessage: addState.errorMessage,
+                                    onSubmitted: _submit,
+                                    onRetry: () => _submit(
+                                      addState.pastedUrl ?? _urlController.text,
+                                    ),
+                                    onSave: () => _submit(_urlController.text),
+                                  ),
+                                ),
+                              ),
+                              SliverToBoxAdapter(
+                                child: Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                    AppSpacing.edge,
+                                    28,
+                                    AppSpacing.edge,
+                                    0,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          'Cookbook',
+                                          style: TextStyle(
+                                            fontFamily: AppFonts.sans,
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.w700,
+                                            color: AppColors.textPrimary,
+                                            letterSpacing: AppText.tracking(
+                                              -0.025,
+                                              22,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Text(
+                                        _cookbookCount(recipes?.length ?? 0),
+                                        style: AppText.cardDescription(),
+                                      ),
+                                      IconButton(
+                                        tooltip: 'Refresh recipes',
+                                        onPressed: () => ref
+                                            .read(recipesProvider.notifier)
+                                            .refresh(),
+                                        icon: const Icon(
+                                          Icons.refresh,
+                                          size: 18,
+                                          color: AppColors.brandGreen,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              SliverToBoxAdapter(
+                                child: Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                    AppSpacing.edge,
+                                    10,
+                                    AppSpacing.edge,
+                                    16,
+                                  ),
+                                  child: _SearchPill(
+                                    controller: _searchController,
+                                    onChanged: _onSearchChanged,
+                                  ),
+                                ),
+                              ),
+                              if (recipes == null && !recipesAsync.hasError)
+                                const SliverToBoxAdapter(
+                                  child: Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                )
+                              else if (recipes == null || filtered.isEmpty)
+                                SliverToBoxAdapter(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(
+                                      AppSpacing.edge,
+                                    ),
+                                    child: Text(
+                                      recipes == null
+                                          ? 'Could not load your recipes. Use Refresh to retry.'
+                                          : recipes.isEmpty
+                                          ? 'Paste a link above to add your first recipe.'
+                                          : 'No recipes match "$_searchQuery".',
+                                      style: AppText.body(),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                )
+                              else
+                                SliverPadding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: AppSpacing.edge,
+                                  ),
+                                  sliver: SliverList.builder(
+                                    itemCount: (filtered.length / columns)
+                                        .ceil(),
+                                    itemBuilder: (context, row) => Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: 14,
+                                      ),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          for (
+                                            var col = 0;
+                                            col < columns;
+                                            col++
+                                          ) ...[
+                                            if (col > 0)
+                                              const SizedBox(width: 18),
+                                            Expanded(
+                                              child:
+                                                  row * columns + col <
+                                                      filtered.length
+                                                  ? _card(
+                                                      filtered[row * columns +
+                                                          col],
+                                                    )
+                                                  : const SizedBox(),
+                                            ),
+                                          ],
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              const SliverToBoxAdapter(
+                                child: SizedBox(
+                                  height: AppSpacing.homeIndicator,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                     ),
-                    Text(
-                      _cookbookCount(recipesAsync.valueOrNull?.length ?? 0),
-                      style: TextStyle(
-                        fontFamily: AppFonts.sans,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w400,
-                        letterSpacing: AppText.tracking(-0.005, 13),
-                        color: AppColors.sageMuted,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              // ── Search pill ──
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.edge, 14, AppSpacing.edge, 0),
-                child: _SearchPill(
-                  controller: _searchController,
-                  onChanged: _onSearchChanged,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Expanded(
-                // Render off the loaded value (same source as the count above),
-                // so once recipes exist the cards stay visible through any
-                // background reload/refetch (e.g. a token refresh). Showing the
-                // spinner only when there is genuinely no data yet prevents the
-                // "count says 4 but the list is a spinner" mismatch.
-                child: Builder(
-                  builder: (context) {
-                    final recipes = recipesAsync.valueOrNull;
-                    if (recipes != null) {
-                      return _RecipeList(
-                        recipes: recipes,
-                        searchQuery: _searchQuery,
-                        scrollController: _scrollController,
-                        onRefresh: () =>
-                            ref.read(recipesProvider.notifier).refresh(),
-                        onTap: _openDetail,
-                        onToggleFavorite: _toggleFavorite,
-                      );
-                    }
-                    if (recipesAsync.hasError) {
-                      return _ListMessage(
-                        'Could not load your recipes.\nPull down to retry.',
-                        onRefresh: () =>
-                            ref.read(recipesProvider.notifier).refresh(),
-                        controller: _scrollController,
-                      );
-                    }
-                    return const Center(
-                      child: CircularProgressIndicator(
-                        color: AppColors.brandGreen,
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  void _openDetail(Recipe recipe) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) =>
-            RecipeDetailScreen(recipeId: recipe.id, summary: recipe),
-      ),
-    );
-  }
+  Widget _card(Recipe recipe) => _SlideInOnAppear(
+    key: ValueKey(recipe.id),
+    child: RecipeCard(
+      recipe: recipe,
+      onTap: () => context.go('/recipes/${Uri.encodeComponent(recipe.id)}'),
+      onToggleFavorite: () => _toggleFavorite(recipe),
+    ),
+  );
 }
 
 class _TopBar extends StatelessWidget {
@@ -260,13 +317,16 @@ class _TopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.edge, vertical: 14),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.edge,
+        vertical: 14,
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           const Wordmark(size: WordmarkSize.md),
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
+          AppAction(
+            label: 'Open profile',
             onTap: onAvatarTap,
             child: AccountAvatar(
               initial: initial,
@@ -285,8 +345,8 @@ class _TopBar extends StatelessWidget {
 String _cookbookCount(int count) => count == 0
     ? 'No recipes yet'
     : count == 1
-        ? '1 recipe'
-        : '$count recipes';
+    ? '1 recipe'
+    : '$count recipes';
 
 /// White search field with a sage border — visually rhymes with the Save
 /// input inside the island (same 12px radius, same 52px height, both white).
@@ -341,8 +401,8 @@ class _SearchPill extends StatelessWidget {
             valueListenable: controller,
             builder: (_, value, _) => value.text.isEmpty
                 ? const SizedBox.shrink()
-                : GestureDetector(
-                    behavior: HitTestBehavior.opaque,
+                : AppAction(
+                    label: 'Clear search',
                     // Programmatic clear doesn't fire onChanged — reset manually.
                     onTap: () {
                       controller.clear();
@@ -350,105 +410,13 @@ class _SearchPill extends StatelessWidget {
                     },
                     child: const Padding(
                       padding: EdgeInsets.only(left: 8),
-                      child: Icon(Icons.close,
-                          size: 16, color: AppColors.sageMuted),
+                      child: Icon(
+                        Icons.close,
+                        size: 16,
+                        color: AppColors.sageMuted,
+                      ),
                     ),
                   ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _RecipeList extends StatelessWidget {
-  const _RecipeList({
-    required this.recipes,
-    required this.onRefresh,
-    required this.onTap,
-    required this.onToggleFavorite,
-    required this.scrollController,
-    this.searchQuery = '',
-  });
-
-  final List<Recipe> recipes;
-  final String searchQuery;
-  final ScrollController scrollController;
-  final Future<void> Function() onRefresh;
-  final void Function(Recipe) onTap;
-  final void Function(Recipe) onToggleFavorite;
-
-  @override
-  Widget build(BuildContext context) {
-    final filtered = searchQuery.isEmpty
-        ? recipes
-        : recipes
-            .where((r) =>
-                r.title.toLowerCase().contains(searchQuery) ||
-                r.hostname.toLowerCase().contains(searchQuery) ||
-                r.description.toLowerCase().contains(searchQuery))
-            .toList();
-
-    if (recipes.isEmpty) {
-      return _ListMessage(
-        'Paste a link above to add your first recipe.',
-        onRefresh: onRefresh,
-        controller: scrollController,
-      );
-    }
-    if (filtered.isEmpty) {
-      return _ListMessage('No recipes match "$searchQuery".',
-          onRefresh: onRefresh, controller: scrollController);
-    }
-    return RefreshIndicator(
-      color: AppColors.brandGreen,
-      onRefresh: onRefresh,
-      child: ListView.separated(
-        controller: scrollController,
-        padding: const EdgeInsets.fromLTRB(
-            AppSpacing.edge, 12, AppSpacing.edge, AppSpacing.homeIndicator),
-        physics: const AlwaysScrollableScrollPhysics(),
-        itemCount: filtered.length,
-        separatorBuilder: (_, _) => const SizedBox(height: 14),
-        itemBuilder: (context, i) {
-          final recipe = filtered[i];
-          return _SlideInOnAppear(
-            key: ValueKey(recipe.id),
-            child: RecipeCard(
-              recipe: recipe,
-              onTap: () => onTap(recipe),
-              onToggleFavorite: () => onToggleFavorite(recipe),
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-/// Scrollable message (empty state / error) that still supports pull-to-refresh.
-class _ListMessage extends StatelessWidget {
-  const _ListMessage(this.text, {required this.onRefresh, this.controller});
-  final String text;
-  final Future<void> Function() onRefresh;
-  final ScrollController? controller;
-
-  @override
-  Widget build(BuildContext context) {
-    return RefreshIndicator(
-      color: AppColors.brandGreen,
-      onRefresh: onRefresh,
-      child: ListView(
-        controller: controller,
-        physics: const AlwaysScrollableScrollPhysics(),
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.edge, 48, AppSpacing.edge, 0),
-            child: Text(
-              text,
-              textAlign: TextAlign.center,
-              style: AppText.body().copyWith(color: AppColors.textSecondary),
-            ),
           ),
         ],
       ),
@@ -473,8 +441,10 @@ class _SlideInOnAppearState extends State<_SlideInOnAppear>
     duration: const Duration(milliseconds: 200),
   )..forward();
 
-  late final Animation<double> _curve =
-      CurvedAnimation(parent: _controller, curve: Curves.easeOut);
+  late final Animation<double> _curve = CurvedAnimation(
+    parent: _controller,
+    curve: Curves.easeOut,
+  );
 
   @override
   void dispose() {

@@ -1,3 +1,4 @@
+import 'app_action.dart';
 import 'package:flutter/widgets.dart';
 
 import '../theme/tokens.dart';
@@ -83,8 +84,8 @@ class _StepperButton extends StatelessWidget {
       label: semanticLabel,
       child: Opacity(
         opacity: enabled ? 1 : 0.4,
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
+        child: AppAction(
+          label: semanticLabel,
           onTap: enabled ? onTap : null,
           child: Container(
             width: 44, // accessible tap target (Apple HIG minimum)
@@ -97,11 +98,7 @@ class _StepperButton extends StatelessWidget {
             ),
             child: Text(
               glyph,
-              style: TextStyle(
-                fontSize: 24,
-                height: 1.0,
-                color: glyphColor,
-              ),
+              style: TextStyle(fontSize: 24, height: 1.0, color: glyphColor),
             ),
           ),
         ),

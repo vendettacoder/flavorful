@@ -4,6 +4,7 @@ import 'dart:async';
 /// request via the custom `auth-header: Bearer <token>` header.
 class AuthSession {
   const AuthSession({
+    required this.userId,
     required this.token,
     required this.email,
     required this.userInitial,
@@ -12,6 +13,8 @@ class AuthSession {
     this.provider,
   });
 
+  /// Stable Supabase user id. Email and access tokens can change.
+  final String userId;
   final String token;
   final String email;
 
@@ -50,6 +53,9 @@ abstract class AuthRepository {
   /// arrives via [authStateChanges], same as Google.
   Future<void> signInWithApple();
 
+  /// Let the Supabase SDK exchange the browser callback for a session.
+  Future<void> completeWebSignIn(Uri uri);
+
   Future<void> signOut();
 }
 
@@ -68,10 +74,12 @@ class MockAuthRepository implements AuthRepository {
   Future<void> signInWithGoogle() async {
     await Future<void>.delayed(const Duration(milliseconds: 700));
     _session = const AuthSession(
+      userId: 'mock-maya',
       token: 'mock-session-token',
       email: 'maya@example.com',
       userInitial: 'M',
       firstName: 'Maya',
+      provider: 'google',
     );
     _controller.add(_session);
   }
@@ -80,12 +88,19 @@ class MockAuthRepository implements AuthRepository {
   Future<void> signInWithApple() async {
     await Future<void>.delayed(const Duration(milliseconds: 700));
     _session = const AuthSession(
+      userId: 'mock-maya',
       token: 'mock-session-token',
       email: 'maya@example.com',
       userInitial: 'M',
       firstName: 'Maya',
+      provider: 'apple',
     );
     _controller.add(_session);
+  }
+
+  @override
+  Future<void> completeWebSignIn(Uri uri) async {
+    throw StateError('Offline demo does not use OAuth callbacks.');
   }
 
   @override

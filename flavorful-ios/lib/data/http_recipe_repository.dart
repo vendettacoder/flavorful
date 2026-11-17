@@ -83,11 +83,13 @@ class HttpRecipeRepository implements RecipeRepository {
       );
     }
 
-    final saved = body.contains('Successfully inserted') ||
+    final saved =
+        body.contains('Successfully inserted') ||
         body.contains('already has a recipe');
     if (!saved) {
       throw const RecipeException(
-          "Couldn't read that page. Try a different URL.");
+        "Couldn't read that page. Try a different URL.",
+      );
     }
 
     final all = await getAllRecipes();
@@ -120,7 +122,14 @@ class HttpRecipeRepository implements RecipeRepository {
   @override
   Future<void> deleteAccount() async {
     try {
-      await _dio.delete<dynamic>('/delete-account');
+      final response = await _dio.delete<dynamic>('/delete-account');
+      final data = response.data;
+      if (data is! Map || data['account_deleted'] != true) {
+        throw const RecipeException(
+          'Your recipes may have been deleted, but your account was not deleted. '
+          'Please try again or contact support.',
+        );
+      }
     } on DioException catch (e) {
       throw RecipeException(
         _friendlyError(e, 'Could not delete your account. Please try again.'),
@@ -144,7 +153,9 @@ class HttpRecipeRepository implements RecipeRepository {
       return 'Too many requests right now — wait a minute and try again.';
     }
     final data = e.response?.data;
-    if (data is Map && data['detail'] is String) return data['detail'] as String;
+    if (data is Map && data['detail'] is String) {
+      return data['detail'] as String;
+    }
     if (data is String && data.isNotEmpty) return data;
     return fallback;
   }

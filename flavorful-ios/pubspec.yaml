@@ -11,6 +11,9 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^1.0.8
+  flutter_web_plugins:
+    sdk: flutter
+  go_router: ^17.0.0
 
   # State management — server-owned data with a client cache (handoff recommendation).
   flutter_riverpod: ^2.6.1

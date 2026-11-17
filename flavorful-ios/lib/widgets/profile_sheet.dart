@@ -1,3 +1,8 @@
+import 'package:flutter/foundation.dart';
+
+import 'app_action.dart';
+// Keep the shared app compatible with the current native Flutter SDK.
+// ignore: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -14,16 +19,32 @@ class ProfileSheet {
   ProfileSheet._();
 
   static Future<void> show(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width;
+    final inset = kIsWeb || width >= 700;
+    final margin = inset ? (width < 600 ? 16.0 : 24.0) : 0.0;
     return showModalBottomSheet<void>(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (_) => const _ProfileSheetBody(),
+      isScrollControlled: true,
+      useSafeArea: true,
+      constraints: BoxConstraints(maxWidth: 520 + margin * 2),
+      builder: (context) => Padding(
+        padding: EdgeInsets.fromLTRB(
+          margin,
+          margin,
+          margin,
+          margin + MediaQuery.viewInsetsOf(context).bottom,
+        ),
+        child: _ProfileSheetBody(inset: inset),
+      ),
     );
   }
 }
 
 class _ProfileSheetBody extends ConsumerWidget {
-  const _ProfileSheetBody();
+  const _ProfileSheetBody({required this.inset});
+
+  final bool inset;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,73 +54,110 @@ class _ProfileSheetBody extends ConsumerWidget {
     final avatarUrl = session?.avatarUrl;
 
     return Container(
-      decoration: const BoxDecoration(
+      key: const ValueKey('profile-panel'),
+      decoration: BoxDecoration(
         color: AppColors.bgPage,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadii.sheet)),
+        borderRadius: inset
+            ? BorderRadius.circular(AppRadii.sheet)
+            : const BorderRadius.vertical(top: Radius.circular(AppRadii.sheet)),
       ),
       child: SafeArea(
         top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Grabber.
-              Center(
-                child: Container(
-                  width: 36,
-                  height: 5,
-                  decoration: BoxDecoration(
-                    color: AppColors.divider,
-                    borderRadius: BorderRadius.circular(3),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  AccountAvatar(initial: initial, avatarUrl: avatarUrl),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (email.isNotEmpty)
-                          Text(
-                            email,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: AppText.body().copyWith(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        const SizedBox(height: 2),
-                        Text(
-                          _providerLabel(session?.provider),
-                          style: AppText.cardDescription(),
-                        ),
-                      ],
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Grabber.
+                Center(
+                  child: Container(
+                    width: 36,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: AppColors.divider,
+                      borderRadius: BorderRadius.circular(3),
                     ),
                   ),
-                ],
-              ),
-              const SizedBox(height: 22),
-              _LogOutButton(
-                onTap: () async {
-                  Navigator.of(context).pop();
-                  await ref.read(authControllerProvider.notifier).signOut();
-                },
-              ),
-              const SizedBox(height: 6),
-              _DeleteAccountButton(
-                onTap: () => _confirmAndDeleteAccount(context, ref),
-              ),
-              const SizedBox(height: 4),
-              const _PrivacyLink(),
-            ],
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    AccountAvatar(initial: initial, avatarUrl: avatarUrl),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (email.isNotEmpty)
+                            Text(
+                              email,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppText.body().copyWith(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          const SizedBox(height: 2),
+                          Text(
+                            _providerLabel(session?.provider),
+                            style: AppText.cardDescription(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 22),
+                _LogOutButton(
+                  onTap: () async {
+                    final controller = ref.read(
+                      authControllerProvider.notifier,
+                    );
+                    final confirmed = await showDialog<bool>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('Log out?'),
+                        content: const Text(
+                          'Your saved recipes will stay in your account.',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx, false),
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx, true),
+                            child: const Text('Log out'),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (confirmed != true || !context.mounted) return;
+                    final messenger = ScaffoldMessenger.of(context);
+                    Navigator.of(context).pop();
+                    try {
+                      await controller.signOut();
+                    } catch (_) {
+                      messenger.showSnackBar(
+                        const SnackBar(
+                          content: Text('Could not log out. Please try again.'),
+                        ),
+                      );
+                    }
+                  },
+                ),
+                const SizedBox(height: 6),
+                _DeleteAccountButton(
+                  onTap: () => _confirmAndDeleteAccount(context, ref),
+                ),
+                const SizedBox(height: 4),
+                const _PrivacyLink(),
+              ],
+            ),
           ),
         ),
       ),
@@ -116,6 +174,10 @@ class _ProfileSheetBody extends ConsumerWidget {
     // Capture before any await so we don't touch BuildContext across the gap.
     final messenger = ScaffoldMessenger.of(context);
     final navigator = Navigator.of(context);
+    final controller = ref.read(authControllerProvider.notifier);
+    final recipes = ref.read(recipesProvider.notifier);
+    final repository = ref.read(recipeRepositoryProvider);
+    final userId = ref.read(sessionUserIdProvider);
 
     final confirmed = await showDialog<bool>(
       context: context,
@@ -138,12 +200,14 @@ class _ProfileSheetBody extends ConsumerWidget {
         ],
       ),
     );
-    if (confirmed != true) return;
+    if (confirmed != true || !context.mounted) return;
 
+    if (ref.read(sessionUserIdProvider) != userId) return;
     navigator.pop(); // close the sheet
     try {
-      await ref.read(authControllerProvider.notifier).deleteAccount();
+      await controller.deleteAccount(repository);
     } catch (e) {
+      await recipes.refresh();
       messenger.showSnackBar(
         SnackBar(
           content: Text(
@@ -178,8 +242,7 @@ class _PrivacyLink extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
+    return AppAction(
       onTap: () => openExternalUrl(AppConfig.privacyPolicyUrl),
       child: Container(
         height: 36,
@@ -205,8 +268,7 @@ class _DeleteAccountButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
+    return AppAction(
       onTap: onTap,
       child: Container(
         height: 44,
@@ -231,8 +293,7 @@ class _LogOutButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
+    return AppAction(
       onTap: onTap,
       child: Container(
         height: 50,

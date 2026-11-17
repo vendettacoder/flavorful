@@ -1,0 +1,2 @@
+# Preserve the published bundle's line endings and checksum.
+passkeys-web-2.9.0.js -text whitespace=cr-at-eol

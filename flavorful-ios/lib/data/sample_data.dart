@@ -12,6 +12,7 @@ List<Recipe> buildSampleRecipes() => [
 
 Recipe _lentilSoup() => Recipe(
       id: 'r-lentil-soup',
+      nutrition: const {'Calories': '320 kcal', 'Protein': '18 g'},
       url: 'https://cookieandkate.com/best-lentil-soup-recipe/',
       hostname: 'cookieandkate.com',
       title: 'Best Lentil Soup',
