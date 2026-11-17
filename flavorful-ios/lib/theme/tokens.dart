@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 /// Design tokens — the single source of truth for color, type, spacing,
@@ -294,6 +295,11 @@ class AppText {
   static TextStyle body() =>
       _sans(size: 14, weight: FontWeight.w500, height: 1.5);
 
+  // iPhone Safari zooms when an input uses text smaller than 16 CSS pixels.
+  // Keep native text sizes unchanged and leave browser zoom available.
+  static const inputFontSize = kIsWeb ? 16.0 : 14.0;
+  static TextStyle input() => body().copyWith(fontSize: inputFontSize);
+
   static TextStyle ingredient() =>
       _sans(size: 15, weight: FontWeight.w500, height: 1.4);
 
@@ -345,7 +351,7 @@ class AppText {
   );
 
   static TextStyle urlPlaceholder() => _sans(
-    size: 14,
+    size: inputFontSize,
     weight: FontWeight.w400,
     color: AppColors.textInputPlaceholder,
   );
@@ -368,5 +374,5 @@ class AppText {
       _mono(size: 12, weight: FontWeight.w400, color: AppColors.accentOrange);
 
   /// Keep URL text unchanged when an editable field enters its saving state.
-  static TextStyle pastedUrl() => body();
+  static TextStyle pastedUrl() => input();
 }

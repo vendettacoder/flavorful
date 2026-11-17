@@ -207,7 +207,7 @@ class _SaveIslandState extends State<SaveIsland> {
                           LengthLimitingTextInputFormatter(2048),
                         ],
                         onSubmitted: widget.onSubmitted,
-                        style: AppText.body().copyWith(fontSize: 14),
+                        style: AppText.input(),
                         cursorColor: AppColors.brandGreen,
                         decoration: InputDecoration(
                           isCollapsed: true,
@@ -215,7 +215,7 @@ class _SaveIslandState extends State<SaveIsland> {
                           hintText: 'https://...',
                           hintStyle: TextStyle(
                             fontFamily: AppFonts.sans,
-                            fontSize: 14,
+                            fontSize: AppText.inputFontSize,
                             fontWeight: FontWeight.w400,
                             color: AppColors.parchmentPlaceholder,
                           ),

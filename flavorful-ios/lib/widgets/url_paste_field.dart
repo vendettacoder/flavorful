@@ -11,8 +11,8 @@ import 'app_icons.dart';
 ///
 ///  * idle    — editable field with the "Paste a recipe URL" placeholder
 ///  * focused — terracotta border + ring (while the field has focus)
-///  * saving  — pasted URL in mono + a "Fetching recipe…" spinner row
-///  * error   — pasted URL in mono + an error message and a "Try again" button
+///  * saving  — pasted URL in the same font + a saving indicator
+///  * error   — editable URL + an error message and a "Try again" button
 class UrlPasteField extends StatefulWidget {
   const UrlPasteField({
     super.key,
@@ -111,7 +111,7 @@ class _UrlPasteFieldState extends State<UrlPasteField> {
                     autocorrect: false,
                     inputFormatters: [LengthLimitingTextInputFormatter(2048)],
                     onSubmitted: widget.onSubmitted,
-                    style: AppText.body(),
+                    style: AppText.input(),
                     cursorColor: AppColors.accentOrange,
                     decoration: InputDecoration(
                       isCollapsed: true,
@@ -199,4 +199,3 @@ class _UrlPasteFieldState extends State<UrlPasteField> {
     );
   }
 }
-

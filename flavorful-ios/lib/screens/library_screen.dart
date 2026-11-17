@@ -379,8 +379,8 @@ class _SearchPill extends StatelessWidget {
               onChanged: onChanged,
               style: TextStyle(
                 fontFamily: AppFonts.sans,
-                fontSize: 14,
-                letterSpacing: AppText.tracking(-0.005, 14),
+                fontSize: AppText.inputFontSize,
+                letterSpacing: AppText.tracking(-0.005, AppText.inputFontSize),
                 color: AppColors.textPrimary,
               ),
               cursorColor: AppColors.brandGreen,
@@ -390,8 +390,11 @@ class _SearchPill extends StatelessWidget {
                 hintText: 'Search recipes',
                 hintStyle: TextStyle(
                   fontFamily: AppFonts.sans,
-                  fontSize: 14,
-                  letterSpacing: AppText.tracking(-0.005, 14),
+                  fontSize: AppText.inputFontSize,
+                  letterSpacing: AppText.tracking(
+                    -0.005,
+                    AppText.inputFontSize,
+                  ),
                   color: AppColors.brandGreen,
                 ),
               ),
