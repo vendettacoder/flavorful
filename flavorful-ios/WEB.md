@@ -102,8 +102,35 @@ Routes:
 The hosting server must serve `index.html` for app routes.
 It must serve real static files without rewriting their paths.
 The local helper includes this route fallback.
-A production host also needs HTTPS, its exact Supabase callback entry, and backend CORS for its origin.
+A production host also needs HTTPS and its exact Supabase callback entry.
+A separate API origin also needs explicit backend CORS.
 Do not cache `index.html` or `flutter_bootstrap.js` without revalidation.
+
+## Deploy to Fly.io
+
+The web app and API use `https://flavorful.fly.dev`.
+The server serves the compiled app from `/app/web`.
+API routes keep their existing paths.
+Use `/health` for the server health response.
+Local API-only runs also keep the health response at `/`.
+
+Commit and push changes before running this command from the repository root:
+
+```sh
+make deploy
+```
+
+The command requires a clean working directory.
+It builds the live web app from the current Git commit in a temporary directory.
+It deploys that web build and the API from the same commit.
+It does not run native iOS tests or deploy the offline demo.
+It keeps the existing Fly machine and public IPs.
+Fly supplies the existing server secrets.
+Do not use a bare `fly deploy` without preparing the web build.
+
+Supabase must allow `https://flavorful.fly.dev/auth/callback`.
+Keep existing native and local callback entries.
+The shared origin does not need a new CORS entry.
 
 ## Layout and tests
 

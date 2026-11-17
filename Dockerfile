@@ -21,9 +21,12 @@ RUN uv sync --frozen --no-dev --no-install-project
 # 2) Chromium + its OS-level dependencies (fonts, libs). --with-deps runs apt.
 RUN .venv/bin/playwright install --with-deps chromium
 
-# 3) Copy the app and finish the install.
+# 3) The release helper supplies web/ from a build of the same Git commit.
 COPY . .
-RUN uv sync --frozen --no-dev
+RUN test -f web/index.html && test -f web/flutter_bootstrap.js && test -f web/main.dart.js \
+    && uv sync --frozen --no-dev
+
+ENV WEB_BUILD_DIR=/app/web
 
 EXPOSE 8000
 

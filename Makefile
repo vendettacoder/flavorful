@@ -24,7 +24,7 @@ FLUTTER ?= $(HOME)/development/flutter/bin/flutter
 API_BASE_URL ?= http://127.0.0.1:8001
 WEB_API_BASE_URL ?= https://flavorful.fly.dev
 
-.PHONY: web web-test web-build web-demo web-demo-build
+.PHONY: web web-test web-build web-demo web-demo-build deploy
 
 # Live auth and API. This does not run or change the backend.
 web:
@@ -43,3 +43,7 @@ web-demo-build:
 
 web-demo: web-demo-build
 	python3 flavorful-ios/tool/serve_web.py --demo --port 5173
+
+# Deploy the committed web app and API together. Requires a clean working tree.
+deploy:
+	uv run --locked python scripts/deploy.py --flutter "$(FLUTTER)"

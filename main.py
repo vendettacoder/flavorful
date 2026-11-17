@@ -19,6 +19,7 @@ from recipe_dao import RecipeDao, RecipeDto, get_db_client
 from recipe_extractor import extract_recipe
 from recipe_timing import time_recipe_save, timed_step
 from url_safety import validate_public_url
+from web_host import WebAppFiles
 
 load_dotenv()
 
@@ -153,7 +154,7 @@ if cors_origins:
     )
 
 
-@app.get("/")
+@app.get("/health")
 async def health():
     """Check that the server responds. Does not check Supabase or Chromium."""
     return {"status": "ok"}
@@ -293,3 +294,11 @@ async def delete_account(auth_header: str = Header(None)):
     user_id = _user_id_from_token(auth_header)
     account_deleted = _delete_supabase_auth_user(user_id)
     return {"deleted_recipes": deleted_recipes, "account_deleted": account_deleted}
+
+
+# Keep API routes ahead of the static app. Local API-only runs retain GET /.
+web_build_dir = os.getenv("WEB_BUILD_DIR", "").strip()
+if web_build_dir:
+    app.mount("/", WebAppFiles(web_build_dir), name="web")
+else:
+    app.add_api_route("/", health, methods=["GET"], include_in_schema=False)
